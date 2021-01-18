@@ -1,0 +1,20 @@
+prepare_data:
+  cmd: python3 src/data/make_dataset.py -o data/interim/ -r data/raw/train.csv -e
+    data/raw/test.csv
+  deps:
+  - path: data/raw/test.csv
+    md5: 029c9cd22461f6dbe8d9ab01def965c6
+    size: 28629
+  - path: data/raw/train.csv
+    md5: 61fdd54abdbf6a85b778e937122e1194
+    size: 61194
+  - path: src/data/make_dataset.py
+    md5: 1f203739a2195cef0377c35806302b13
+    size: 3053
+  outs:
+  - path: data/interim/test_categorized.csv
+    md5: 67542068a6a39daa179c796df19ec06b
+    size: 12221
+  - path: data/interim/train_categorized.csv
+    md5: 08f6566de21e9578ee9b3bd04c9aec04
+    size: 28721

@@ -1,0 +1,11 @@
+stages:
+  prepare_data:
+    cmd: python3 src/data/make_dataset.py -o data/interim/ -r data/raw/train.csv -e
+      data/raw/test.csv
+    deps:
+    - data/raw/test.csv
+    - data/raw/train.csv
+    - src/data/make_dataset.py
+    outs:
+    - data/interim/test_categorized.csv
+    - data/interim/train_categorized.csv
