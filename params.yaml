@@ -1,0 +1,10 @@
+random_forest:
+  max_depth: None
+  min_samples_leaf: 2
+  min_samples_split: 2
+
+random_seed: 12345
+
+test_size: 0.2
+
+stratify: None
