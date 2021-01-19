@@ -11,7 +11,7 @@ stages:
     - data/interim/test_categorized.csv
     - data/interim/train_categorized.csv
   train_model:
-    cmd: python3 src/models/train_model.py -o models/ -tr data/interim/train_categorized.csv
+    cmd: python3 src/models/train_model.py -o results/ -tr data/interim/train_categorized.csv
       -te data/interim/test_categorized.csv
     deps:
     - data/interim/test_categorized.csv
@@ -21,6 +21,6 @@ stages:
     - random_seed
     - test_size
     outs:
-    - models/test_submission.csv
+    - results/test_submission.csv
     metrics:
-    - models/metrics.json
+    - results/metrics.json
