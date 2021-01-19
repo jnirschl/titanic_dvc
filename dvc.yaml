@@ -10,3 +10,16 @@ stages:
     - data/interim/label_encoding.yaml
     - data/interim/test_categorized.csv
     - data/interim/train_categorized.csv
+  train_model:
+    cmd: python3 src/models/train_model.py -o models/ -tr data/interim/train_categorized.csv
+      -te data/interim/test_categorized.csv
+    deps:
+    - data/interim/test_categorized.csv
+    - data/interim/train_categorized.csv
+    - src/models/train_model.py
+    params:
+    - random_seed
+    - test_size
+    outs:
+    - models/metrics.json
+    - models/test_submission.csv

@@ -21,3 +21,27 @@ prepare_data:
   - path: data/interim/train_categorized.csv
     md5: 9ccff89e173158915d08684117191ce9
     size: 20716
+train_model:
+  cmd: python3 src/models/train_model.py -o models/ -tr data/interim/train_categorized.csv
+    -te data/interim/test_categorized.csv
+  deps:
+  - path: data/interim/test_categorized.csv
+    md5: e2b2f8d01bc9a59b47cbc7af3a30632b
+    size: 10527
+  - path: data/interim/train_categorized.csv
+    md5: 9ccff89e173158915d08684117191ce9
+    size: 20716
+  - path: src/models/train_model.py
+    md5: a115f8a70b935bd799930296479f17d4
+    size: 4306
+  params:
+    params.yaml:
+      random_seed: 12345
+      test_size: 0.2
+  outs:
+  - path: models/metrics.json
+    md5: 36d0eec6799a7ab19f2e6022180098d0
+    size: 59
+  - path: models/test_submission.csv
+    md5: 24c71f9277bf187e8e446ab19b89d639
+    size: 2839
