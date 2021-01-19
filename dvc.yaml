@@ -21,5 +21,6 @@ stages:
     - random_seed
     - test_size
     outs:
-    - models/metrics.json
     - models/test_submission.csv
+    metrics:
+    - models/metrics.json
