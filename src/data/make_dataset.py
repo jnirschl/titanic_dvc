@@ -16,7 +16,8 @@ import yaml
 def encode_labels(train_path, test_path,
                   output_dir, remove_nan=False,
                   label_dict_name="label_encoding.yaml"):
-    """Impute missing values"""
+    """Encode categorical labels as numeric, save the processed
+    dataset the label encoding dictionary"""
     assert (os.path.isfile(train_path)), FileNotFoundError
     assert (os.path.isfile(test_path)), FileNotFoundError
     assert (os.path.isdir(output_dir)), NotADirectoryError
