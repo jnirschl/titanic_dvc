@@ -13,6 +13,12 @@
 #
 #   Time-stamp: <>
 #   ======================================================================
+#
+#   Licensed under the MIT license. See the LICENSE.md file in the project
+#   root directory for full license information.
+#
+#   Time-stamp: <>
+#   ======================================================================
 
 # imports
 import os
@@ -36,11 +42,13 @@ min_samples_leaf = params["random_forest"]["min_samples_leaf"]
 min_samples_split = params["random_forest"]["min_samples_split"]
 
 
-def main(train_path, model=model,
+def main(train_path, model="randomforest",
          random_seed=random_seed):
     """"Search for optimal parameters using hyperopt and write
     to params.yml in root dir"""
     assert (os.path.isfile(train_path)), FileNotFoundError
+    assert (type(model) is str), TypeError
+    assert (model.lower() in ["randomforest"]), TypeError
 
     # read files
     train_df = pd.read_csv(train_path, sep=",", header=0,
@@ -56,11 +64,14 @@ def main(train_path, model=model,
                                                       test_size=test_size,
                                                       random_state=random_seed)
 
-    # find optimal parameters
-    best_params = rf_model(x_train, y_train,
-                           random_seed=random_seed,
-                           num_eval=100,
-                           cross_val=10)
+    # find optimal parameters for a specific model
+    if model.lower() == "randomforest":
+        best_params = rf_model(x_train, y_train,
+                               random_seed=random_seed,
+                               num_eval=100,
+                               cross_val=10)
+    else:
+        raise NotImplementedError
 
     return best_params
 
