@@ -1,0 +1,14 @@
+download_data:
+  cmd: python3 src/data/download_data.py -c titanic -tr train.csv -te test.csv -o
+    ./data/raw
+  deps:
+  - path: src/data/download_data.py
+    md5: 39af84b6a3f91ffe7d6794b84ea11800
+    size: 1959
+  outs:
+  - path: data/raw/test.csv
+    md5: 029c9cd22461f6dbe8d9ab01def965c6
+    size: 28629
+  - path: data/raw/train.csv
+    md5: 61fdd54abdbf6a85b778e937122e1194
+    size: 61194

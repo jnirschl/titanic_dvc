@@ -1,0 +1,10 @@
+stages:
+  download_data:
+    desc: Download data from Kaggle
+    cmd: python3 src/data/download_data.py -c titanic -tr train.csv -te test.csv -o
+      ./data/raw
+    deps:
+      - src/data/download_data.py
+    outs:
+      - data/raw/test.csv
+      - data/raw/train.csv
