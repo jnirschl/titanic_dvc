@@ -7,17 +7,21 @@
 #   Time-stamp: <>
 # ======================================================================
 
-import os
 import argparse
-import pathlib
+import os
+from pathlib import Path
+
 import pandas as pd
 import yaml
 
-def encode_labels(train_path, test_path,
-                  output_dir, remove_nan=False,
-                  label_dict_name="label_encoding.yaml"):
+
+def main(train_path, test_path,
+         output_dir, remove_nan=False,
+         label_dict_name="label_encoding.yaml"):
     """Encode categorical labels as numeric, save the processed
     dataset the label encoding dictionary"""
+    output_dir = Path(output_dir).resolve()
+
     assert (os.path.isfile(train_path)), FileNotFoundError
     assert (os.path.isfile(test_path)), FileNotFoundError
     assert (os.path.isdir(output_dir)), NotADirectoryError
@@ -54,8 +58,7 @@ def encode_labels(train_path, test_path,
     if remove_nan:
         train_df = train_df.dropna(axis=0, how="any")
 
-    # set output and save filenames
-    output_dir = pathlib.Path(output_dir)
+    # set output filenames
     save_train_fname = os.path.basename(train_path.replace(".csv", "_categorized.csv"))
     save_test_fname = os.path.basename(test_path.replace(".csv", "_categorized.csv"))
 
@@ -72,12 +75,13 @@ def encode_labels(train_path, test_path,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--out-dir", dest="output_dir",
-                        required=True, help="output directory")
     parser.add_argument("-tr", "--train", dest="train_path",
                         required=True, help="Train CSV file")
     parser.add_argument("-te", "--test", dest="test_path",
                         required=True, help="Test CSV file")
+    parser.add_argument("-o", "--out-dir", dest="output_dir",
+                        default=Path("./data/interim").resolve(),
+                        required=False, help="output directory")
     parser.add_argument("-r", "--remove-nan", dest="remove_nan",
                         default=False, required=False,
                         help="Remove nan rows from training dataset")
@@ -87,6 +91,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # convert categorical variables into integer codes
-    encode_labels(args.train_path, args.test_path, args.output_dir,
-                  remove_nan=args.remove_nan,
-                  label_dict_name=args.label_dict_name)
+    main(args.train_path, args.test_path,
+         args.output_dir,
+         remove_nan=args.remove_nan,
+         label_dict_name=args.label_dict_name)
