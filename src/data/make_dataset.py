@@ -106,10 +106,12 @@ def create_data_dictionary(data_path,
     summary_df = df.drop(columns=["PassengerId", "Cabin", "Embarked", "Ticket", "Name"])
     categorical_idx = summary_df.columns[summary_df.dtypes == "category"].to_list()
     sig_digits = {"Age": 1}
+    min_max = ["Age", "Fare", "Parch", "SibSp"]
     mytable = TableOne(summary_df,
                        columns=summary_df.columns.to_list(),
                        categorical=categorical_idx,
-                       decimals=sig_digits)
+                       decimals=sig_digits,
+                       min_max=min_max)
 
     # save table one
     # write table to latex
