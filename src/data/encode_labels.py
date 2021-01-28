@@ -40,13 +40,12 @@ def main(train_path, test_path,
     param_dtypes = params["dtypes"]
     param_dtypes["Pclass"] = pd.api.types.CategoricalDtype(categories=[1, 2, 3],
                                                            ordered=True)
-
     # concatenate df
     df = pd.concat([train_df, test_df], sort=False)
     df = df.astype(param_dtypes)
 
     # drop unnecessary filenames
-    df = df.drop(columns=["Name", "Cabin", "Ticket"])
+    df = df.drop(columns=params["drop_cols"])
 
     # convert to categorical
     encoding_dict = {}

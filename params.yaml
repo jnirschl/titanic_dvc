@@ -18,3 +18,5 @@ dtypes:
   Sex: category
   SibSp: int
   Survived: category
+
+drop_cols: [ "Name", "Cabin", "Ticket" ]
