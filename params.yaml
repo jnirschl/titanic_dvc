@@ -8,3 +8,13 @@ random_seed: 12345
 test_size: 0.2
 
 stratify: None
+
+dtypes:
+  Age: float
+  Embarked: category
+  Fare: float
+  Parch: int
+  Pclass: category
+  Sex: category
+  SibSp: int
+  Survived: category

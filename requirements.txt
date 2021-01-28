@@ -17,3 +17,4 @@ plotly-express~=0.4.0
 hyperopt~=0.2.5
 kaggle~=1.5.10
 pytest
+tableone~=0.7.10

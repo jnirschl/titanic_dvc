@@ -9,11 +9,15 @@
 
 import argparse
 import os
+import subprocess
+import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import yaml
 from kaggle.api.kaggle_api_extended import KaggleApi
+from tableone import TableOne
 
 
 def download_data(competition, train_data, test_data,
@@ -36,63 +40,87 @@ def download_data(competition, train_data, test_data,
                                   test_data, path=output_dir)
 
 
-def encode_labels(train_path, test_path,
-                  output_dir, remove_nan=False,
-                  label_dict_name="label_encoding.yaml"):
-    """Encode categorical labels as numeric, save the processed
-    dataset the label encoding dictionary"""
-    output_dir = Path(output_dir).resolve()
+def create_data_dictionary(data_path,
+                           report_dir="./reports/figures",
+                           output_file="data_dictionary.tex"):
+    """Create a data dictionary"""
+    assert (os.path.isfile(data_path)), FileNotFoundError
+    assert (os.path.isdir(report_dir)), NotADirectoryError
+    report_dir = Path(report_dir).resolve()
 
-    assert (os.path.isfile(train_path)), FileNotFoundError
-    assert (os.path.isfile(test_path)), FileNotFoundError
-    assert (os.path.isdir(output_dir)), NotADirectoryError
+    # read files - do not specify index column
+    df = pd.read_csv(data_path, sep=",", header=0)
 
-    # read files
-    train_df = pd.read_csv(train_path, sep=",", header=0,
-                           index_col="PassengerId")
-    test_df = pd.read_csv(test_path, sep=",", header=0,
-                          index_col="PassengerId")
+    # read column datatypes from params.yaml
+    with open("params.yaml", 'r') as file:
+        params = yaml.safe_load(file)
 
-    # concatenate df
-    df = pd.concat([train_df, test_df], sort=False)
+    # update params for column data types
+    param_dtypes = params["dtypes"]
+    param_dtypes["Pclass"] = pd.api.types.CategoricalDtype(categories=[1, 2, 3],
+                                                           ordered=True)
+    df = df.astype(param_dtypes)
 
-    # drop unnecessary filenames
-    df = df.drop(columns=["Name", "Cabin", "Ticket"])
+    # Save information about column names, non-null count, and
+    # column datatypes
+    cols = df.columns.to_list()
+    n_cols = np.arange(0, len(cols))
+    total_rows = df.shape[0]
+    null_count = total_rows - df.isna().sum()
+    col_dtype = df.dtypes
 
-    # convert to categorical
-    df["Embarked"] = df["Embarked"].astype("category")
-    df["Sex"] = df["Sex"].astype("category")
+    # additional processing for categorical
+    category_list = []
+    ordered_list = []
+    for elem in col_dtype.to_list():
+        if isinstance(elem, pd.CategoricalDtype):
+            category_list.append(elem.categories.to_list())
+            ordered_list.append(str(elem.ordered))
+        else:
+            category_list.append("")
+            ordered_list.append("")
 
-    # save dictionary mapping text to categorical label
-    embarked_dict = {key: val for key, val in enumerate(df["Embarked"].cat.categories)}
-    sex_dict = {key: val for key, val in enumerate(df["Sex"].cat.categories)}
+    out_df = pd.DataFrame(data={"#": n_cols, "Column": cols,
+                                "Non-null count": null_count.to_numpy(),
+                                "Dtype": col_dtype.to_list(),
+                                "Categories": category_list,
+                                "Ordered": ordered_list})
+    # write table to latex
+    template = r'''\documentclass[preview]{{standalone}}
+    \usepackage{{booktabs}}
+    \begin{{document}}
+    {}
+    \end{{document}}
+    '''
 
-    # transform to categorical codes
-    df["Embarked"] = df["Embarked"].cat.codes
-    df["Sex"] = df["Sex"].cat.codes
+    output_file = report_dir.joinpath(output_file)
+    with open(output_file, "w") as file:
+        file.write(template.format(out_df.to_latex()))
 
-    # return datasets to train and test
-    train_df = df.loc[train_df.index, df.columns]
-    test_df = df.loc[test_df.index, df.columns[1:]]
+    # convert tex to PDF
+    if os.path.isfile(output_file) and sys.platform == "linux":
+        subprocess.call(["pdflatex", "--output-directory",
+                         report_dir, output_file])
 
-    # remove nan (if applicable
-    if remove_nan:
-        train_df = train_df.dropna(axis=0, how="any")
+    # create instance of tableone and save summary statistics
+    summary_df = df.drop(columns=["PassengerId", "Cabin", "Embarked", "Ticket", "Name"])
+    categorical_idx = summary_df.columns[summary_df.dtypes == "category"].to_list()
+    sig_digits = {"Age": 1}
+    mytable = TableOne(summary_df,
+                       columns=summary_df.columns.to_list(),
+                       categorical=categorical_idx,
+                       decimals=sig_digits)
 
-    # set output filenames
-    save_train_fname = os.path.basename(train_path.replace(".csv", "_categorized.csv"))
-    save_test_fname = os.path.basename(test_path.replace(".csv", "_categorized.csv"))
+    # save table one
+    # write table to latex
+    table_filepath = report_dir.joinpath("table_one.tex")
+    with open(table_filepath, "w") as file:
+        file.write(template.format(mytable.to_latex()))
 
-    # save updated dataframes
-    train_df.to_csv(output_dir.joinpath(save_train_fname))
-    test_df.to_csv(output_dir.joinpath(save_test_fname))  # test cols starts from 1 because survival status is hidden
-
-    # save and encoding dictionaries
-    encoding_dict = yaml.safe_dump({"Embarked": embarked_dict,
-                                    "Sex": sex_dict})
-    with open(os.path.join(output_dir, label_dict_name), "w") as writer:
-        writer.writelines(encoding_dict)
-
+    # convert tex to PDF
+    if os.path.isfile(table_filepath) and sys.platform == "linux":
+        subprocess.call(["pdflatex", "--output-directory",
+                         report_dir, table_filepath])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -108,18 +136,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # set vars
-    output_dir = Path(args.output_dir).resolve()
+    args.output_dir = Path(args.output_dir).resolve()
+    train_path = args.output_dir.joinpath(args.train_data)
+    test_path = args.output_dir.joinpath(args.test_data)
 
     # download dataset from kaggle
     download_data(args.competition, args.train_data, args.test_data,
-                  output_dir=output_dir)
+                  output_dir=args.output_dir)
 
     # create data dictionary
-
-    # convert categorical variables into integer codes
-    train_path = output_dir.joinpath(args.train_data)
-    test_path = output_dir.joinpath(args.test_data)
-    encode_labels(train_path, test_path,
-                  args.output_dir,
-                  remove_nan=args.remove_nan,
-                  label_dict_name=args.label_dict_name)
+    create_data_dictionary(train_path)
