@@ -2,8 +2,8 @@ make_dataset:
   cmd: python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o ./data/raw
   deps:
   - path: src/data/make_dataset.py
-    md5: 3728248c9105adaa1d7768884385f633
-    size: 5564
+    md5: a7fb87dc4b527dc7372027690e367eaa
+    size: 5566
   params:
     params.yaml:
       dtypes:
@@ -28,3 +28,37 @@ make_dataset:
   - path: reports/figures/table_one.tex
     md5: 0db6039afac4e9edc5e0e08b596863fc
     size: 808
+encode_labels:
+  cmd: python3 src/data/encode_labels.py -tr data/raw/train.csv -te data/raw/test.csv
+    -o data/interim
+  deps:
+  - path: data/raw/test.csv
+    md5: 029c9cd22461f6dbe8d9ab01def965c6
+    size: 28629
+  - path: data/raw/train.csv
+    md5: 61fdd54abdbf6a85b778e937122e1194
+    size: 61194
+  - path: src/data/encode_labels.py
+    md5: 27610ef40248da57ab596bc1817d2eeb
+    size: 4032
+  params:
+    params.yaml:
+      dtypes:
+        Age: float
+        Embarked: category
+        Fare: float
+        Parch: int
+        Pclass: category
+        Sex: category
+        SibSp: int
+        Survived: category
+  outs:
+  - path: data/interim/label_encoding.yaml
+    md5: 8e736d94ad872a9a10f2321653990609
+    size: 115
+  - path: data/interim/test_categorized.csv
+    md5: b4e00f25f2710167436304715568a61a
+    size: 10527
+  - path: data/interim/train_categorized.csv
+    md5: 82d054f01d11687446d055cd90b093e9
+    size: 23353

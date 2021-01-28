@@ -32,23 +32,31 @@ def main(train_path, test_path,
     test_df = pd.read_csv(test_path, sep=",", header=0,
                           index_col="PassengerId")
 
+    # read column datatypes from params.yaml
+    with open("params.yaml", 'r') as file:
+        params = yaml.safe_load(file)
+
+    # update params for column data types
+    param_dtypes = params["dtypes"]
+    param_dtypes["Pclass"] = pd.api.types.CategoricalDtype(categories=[1, 2, 3],
+                                                           ordered=True)
+
     # concatenate df
     df = pd.concat([train_df, test_df], sort=False)
+    df = df.astype(param_dtypes)
 
     # drop unnecessary filenames
     df = df.drop(columns=["Name", "Cabin", "Ticket"])
 
     # convert to categorical
-    df["Embarked"] = df["Embarked"].astype("category")
-    df["Sex"] = df["Sex"].astype("category")
+    encoding_dict = {}
+    for elem, col in zip(df.dtypes, df.columns):
+        if isinstance(elem, pd.CategoricalDtype):
+            # save mapping of category to integer class
+            encoding_dict[col] = {key: val for key, val in enumerate(elem.categories)}
 
-    # save dictionary mapping text to categorical label
-    embarked_dict = {key: val for key, val in enumerate(df["Embarked"].cat.categories)}
-    sex_dict = {key: val for key, val in enumerate(df["Sex"].cat.categories)}
-
-    # transform to categorical codes
-    df["Embarked"] = df["Embarked"].cat.codes
-    df["Sex"] = df["Sex"].cat.codes
+            # transform to categorical codes
+            df[col] = df[col].cat.codes
 
     # return datasets to train and test
     train_df = df.loc[train_df.index, df.columns]
@@ -67,8 +75,7 @@ def main(train_path, test_path,
     test_df.to_csv(output_dir.joinpath(save_test_fname))  # test cols starts from 1 because survival status is hidden
 
     # save and encoding dictionaries
-    encoding_dict = yaml.safe_dump({"Embarked": embarked_dict,
-                                    "Sex": sex_dict})
+    encoding_dict = yaml.safe_dump(encoding_dict)
     with open(os.path.join(output_dir, label_dict_name), "w") as writer:
         writer.writelines(encoding_dict)
 
