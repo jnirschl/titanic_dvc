@@ -1,10 +1,14 @@
 stages:
-  download_data:
-    desc: Download data from Kaggle
-    cmd: python3 src/data/download_data.py -c titanic -tr train.csv -te test.csv -o
+  make_dataset:
+    desc: Download data from Kaggle, create data dictionary and summary dtable
+    cmd: python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o
       ./data/raw
     deps:
-      - src/data/download_data.py
+    - src/data/make_dataset.py
+    params:
+    - dtypes
     outs:
-      - data/raw/test.csv
-      - data/raw/train.csv
+    - data/raw/test.csv
+    - data/raw/train.csv
+    - reports/figures/data_dictionary.tex
+    - reports/figures/table_one.tex
