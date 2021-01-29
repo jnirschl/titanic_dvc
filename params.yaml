@@ -1,14 +1,7 @@
-random_forest:
-  max_depth: None
-  min_samples_leaf: 2
-  min_samples_split: 2
-
-random_seed: 12345
-
-test_size: 0.2
-
-stratify: None
-
+drop_cols:
+  - Name
+  - Cabin
+  - Ticket
 dtypes:
   Age: float
   Embarked: category
@@ -18,5 +11,12 @@ dtypes:
   Sex: category
   SibSp: int
   Survived: category
-
-drop_cols: [ "Name", "Cabin", "Ticket" ]
+imputation:
+  Age: 29.6991
+random_forest:
+  max_depth: None
+  min_samples_leaf: 2
+  min_samples_split: 2
+random_seed: 12345
+stratify: None
+test_size: 0.2

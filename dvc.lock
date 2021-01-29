@@ -2,8 +2,8 @@ make_dataset:
   cmd: python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o ./data/raw
   deps:
   - path: src/data/make_dataset.py
-    md5: c97f253f3b265b213ec198e1699ae1fb
-    size: 5654
+    md5: 5e9f76da7365df0384c1a9148240d985
+    size: 5694
   params:
     params.yaml:
       dtypes:
@@ -39,8 +39,8 @@ encode_labels:
     md5: 61fdd54abdbf6a85b778e937122e1194
     size: 61194
   - path: src/data/encode_labels.py
-    md5: 72e54b99874ebdd72323f6b1f569d289
-    size: 4023
+    md5: 9f66351cbe937cecf76985f96295b8f6
+    size: 4181
   params:
     params.yaml:
       dtypes:
@@ -57,8 +57,41 @@ encode_labels:
     md5: 8e736d94ad872a9a10f2321653990609
     size: 115
   - path: data/interim/test_categorized.csv
-    md5: b4e00f25f2710167436304715568a61a
-    size: 10527
+    md5: f0fcdcd7bb08c23d382a665ac1436034
+    size: 10788
   - path: data/interim/train_categorized.csv
-    md5: 82d054f01d11687446d055cd90b093e9
-    size: 23353
+    md5: 5d06666c95fed743140b44190fb67c77
+    size: 23884
+impute_nan:
+  cmd: python3 src/data/replace_nan.py -tr data/interim/train_categorized.csv -te
+    data/interim/test_categorized.csv -o data/interim
+  deps:
+  - path: data/interim/test_categorized.csv
+    md5: f0fcdcd7bb08c23d382a665ac1436034
+    size: 10788
+  - path: data/interim/train_categorized.csv
+    md5: 5d06666c95fed743140b44190fb67c77
+    size: 23884
+  - path: src/data/replace_nan.py
+    md5: a1300c62a3d4af201a87f56ff83d0b77
+    size: 2861
+  params:
+    params.yaml:
+      dtypes:
+        Age: float
+        Embarked: category
+        Fare: float
+        Parch: int
+        Pclass: category
+        Sex: category
+        SibSp: int
+        Survived: category
+      imputation:
+        Age: 29.6991
+  outs:
+  - path: data/interim/test_nan_imputed.csv
+    md5: 6a8f3b4b04186bbefb624a533d56fdeb
+    size: 11129
+  - path: data/interim/train_nan_imputed.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
