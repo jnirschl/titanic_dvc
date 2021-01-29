@@ -28,8 +28,10 @@ def main(train_path, test_path,
 
     # read files
     train_df = pd.read_csv(train_path, sep=",", header=0,
+                           na_values=["nan"],
                            index_col="PassengerId")
     test_df = pd.read_csv(test_path, sep=",", header=0,
+                          na_values=["nan"],
                           index_col="PassengerId")
 
     # read column datatypes from params.yaml
@@ -70,8 +72,10 @@ def main(train_path, test_path,
     save_test_fname = os.path.basename(test_path.replace(".csv", "_categorized.csv"))
 
     # save updated dataframes
-    train_df.to_csv(output_dir.joinpath(save_train_fname))
-    test_df.to_csv(output_dir.joinpath(save_test_fname))  # test cols starts from 1 because survival status is hidden
+    train_df.to_csv(output_dir.joinpath(save_train_fname),
+                    na_rep='nan')
+    test_df.to_csv(output_dir.joinpath(save_test_fname),
+                   na_rep='nan')  # test cols starts from 1 because survival status is hidden
 
     # save and encoding dictionaries
     encoding_dict = yaml.safe_dump(encoding_dict)

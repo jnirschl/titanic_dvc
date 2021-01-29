@@ -49,7 +49,8 @@ def create_data_dictionary(data_path,
     report_dir = Path(report_dir).resolve()
 
     # read files - do not specify index column
-    df = pd.read_csv(data_path, sep=",", header=0)
+    df = pd.read_csv(data_path, sep=",", header=0,
+                     na_values=["nan"])
 
     # read column datatypes from params.yaml
     with open("params.yaml", 'r') as file:
