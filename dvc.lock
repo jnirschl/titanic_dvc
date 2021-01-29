@@ -2,8 +2,8 @@ make_dataset:
   cmd: python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o ./data/raw
   deps:
   - path: src/data/make_dataset.py
-    md5: 2d4c7d921ef3361dde93f420f7d0b3c9
-    size: 6232
+    md5: a9455ccbe0ab5ce4912ef7d1b8278a18
+    size: 6230
   params:
     params.yaml:
       dtypes:
@@ -73,19 +73,10 @@ impute_nan:
     md5: 5d06666c95fed743140b44190fb67c77
     size: 23884
   - path: src/data/replace_nan.py
-    md5: ce6f07e00f95cd7e230686729b5d7147
-    size: 2862
+    md5: 0ddcc93231044227542be6d537674365
+    size: 2318
   params:
     params.yaml:
-      dtypes:
-        Age: float
-        Embarked: category
-        Fare: float
-        Parch: int
-        Pclass: category
-        Sex: category
-        SibSp: int
-        Survived: category
       imputation:
         Age: 29.6991
   outs:

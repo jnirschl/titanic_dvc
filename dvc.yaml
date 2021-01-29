@@ -27,7 +27,7 @@ stages:
       - data/interim/test_categorized.csv
       - data/interim/train_categorized.csv
   impute_nan:
-    desc: Replace missing ages using mean imputation and update params.yaml
+    desc: Replace missing values for age with mean values from training dataset.
     cmd: python3 src/data/replace_nan.py -tr data/interim/train_categorized.csv -te
       data/interim/test_categorized.csv -o data/interim
     deps:
@@ -35,7 +35,6 @@ stages:
       - data/interim/train_categorized.csv
       - src/data/replace_nan.py
     params:
-      - dtypes
       - imputation
     outs:
       - data/interim/test_nan_imputed.csv
