@@ -136,6 +136,7 @@ def create_data_dictionary(data_path,
         subprocess.call(["pdflatex", "--output-directory",
                          report_dir, table_filepath])
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--competition", dest="competition",
