@@ -64,26 +64,37 @@ def create_data_dictionary(data_path,
 
     # Save information about column names, non-null count, and
     # column datatypes
-    cols = df.columns.to_list()
-    n_cols = np.arange(0, len(cols))
+    col_list = df.columns.to_list()
+    n_cols = np.arange(0, len(col_list))
     total_rows = df.shape[0]
     null_count = total_rows - df.isna().sum()
     col_dtype = df.dtypes
 
     # additional processing for categorical
     category_list = []
+    drange_list = []
     ordered_list = []
-    for elem in col_dtype.to_list():
-        if isinstance(elem, pd.CategoricalDtype):
+    for col, elem in zip(col_list, col_dtype.to_list()):
+        if str(elem) in {"category"}:
             category_list.append(elem.categories.to_list())
+            drange_list.append([df[col].cat.categories.min(),
+                                df[col].cat.categories.max()])
             ordered_list.append(str(elem.ordered))
+        elif str(elem) in {"float64", "float32",
+                           "int64", "int64"}:
+            category_list.append("")
+            drange_list.append([round(df[col].min(), 2),
+                                round(df[col].max(), 2)])
+            ordered_list.append("")
         else:
             category_list.append("")
+            drange_list.append("")
             ordered_list.append("")
 
-    out_df = pd.DataFrame(data={"#": n_cols, "Column": cols,
+    out_df = pd.DataFrame(data={"#": n_cols, "Column": col_list,
                                 "Non-null count": null_count.to_numpy(),
                                 "Dtype": col_dtype.to_list(),
+                                "Drange": drange_list,
                                 "Categories": category_list,
                                 "Ordered": ordered_list})
     # write table to latex
@@ -106,8 +117,8 @@ def create_data_dictionary(data_path,
     # create instance of tableone and save summary statistics
     summary_df = df.drop(columns=["PassengerId", "Cabin", "Embarked", "Ticket", "Name"])
     categorical_idx = summary_df.columns[summary_df.dtypes == "category"].to_list()
-    sig_digits = {"Age": 1}
-    min_max = ["Age", "Fare", "Parch", "SibSp"]
+    sig_digits = {"Age": 1, "Fare": 2}
+    min_max = ["Parch", "SibSp"]
     mytable = TableOne(summary_df,
                        columns=summary_df.columns.to_list(),
                        categorical=categorical_idx,
