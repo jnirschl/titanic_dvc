@@ -73,8 +73,8 @@ impute_nan:
     md5: 5d06666c95fed743140b44190fb67c77
     size: 23884
   - path: src/data/replace_nan.py
-    md5: a1300c62a3d4af201a87f56ff83d0b77
-    size: 2861
+    md5: ce6f07e00f95cd7e230686729b5d7147
+    size: 2862
   params:
     params.yaml:
       dtypes:
