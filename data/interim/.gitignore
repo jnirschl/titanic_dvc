@@ -1,3 +1,5 @@
 /train_categorized.csv
 /test_categorized.csv
 /label_encoding.yaml
+/train_nan_imputed.csv
+/test_nan_imputed.csv
