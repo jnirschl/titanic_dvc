@@ -2,8 +2,8 @@ make_dataset:
   cmd: python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o ./data/raw
   deps:
   - path: src/data/make_dataset.py
-    md5: 185a4386ae4571168768d94783a474c6
-    size: 2359
+    md5: 6003407559d33e14c4122af507648dfd
+    size: 2280
   params:
     params.yaml:
       dtypes:
@@ -73,16 +73,16 @@ impute_nan:
     md5: 5d06666c95fed743140b44190fb67c77
     size: 23884
   - path: src/data/replace_nan.py
-    md5: 6b375295e66263dfd1f5b2932ebd6318
-    size: 2668
+    md5: 6834705a17ff8aec05abebfdb220dc77
+    size: 2600
   params:
     params.yaml:
       imputation:
         Age: 29.6991
   outs:
   - path: data/interim/test_nan_imputed.csv
-    md5: 6a8f3b4b04186bbefb624a533d56fdeb
-    size: 11129
+    md5: aa7540d1d3818bc69f943afdf4b57d39
+    size: 11132
   - path: data/interim/train_nan_imputed.csv
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
@@ -91,14 +91,14 @@ normalize_data:
     data/interim/test_nan_imputed.csv -o data/processed/
   deps:
   - path: data/interim/test_nan_imputed.csv
-    md5: 6a8f3b4b04186bbefb624a533d56fdeb
-    size: 11129
+    md5: aa7540d1d3818bc69f943afdf4b57d39
+    size: 11132
   - path: data/interim/train_nan_imputed.csv
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
   - path: src/data/normalize_data.py
-    md5: 76215f3859b5b8bb9333f0e90e74e442
-    size: 1998
+    md5: b7f1a5e16165928f55495fa6d48ca26e
+    size: 1925
   params:
     params.yaml:
       normalize: None

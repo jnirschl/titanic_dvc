@@ -13,39 +13,53 @@ from pathlib import Path
 
 import yaml
 
-from src.data import load_data
+from src.data import load_data, load_params, save_as_csv
 
 
 def main(train_path, test_path,
          output_dir):
     """Split data into train, dev, and test"""
 
-    train_df, test_df, output_dir, params = load_data(train_path,
-                                                      test_path,
-                                                      output_dir,
-                                                      load_params=True)
+    output_dir = Path(output_dir).resolve()
+    assert (os.path.isdir(output_dir)), NotADirectoryError
+
+    # load data
+    train_df, test_df = load_data([train_path, test_path], sep=",", header=0,
+                                  index_col="PassengerId")
+
+    # load params
+    params = load_params()
 
     # fill nans with column mean/mode on test set
-    mean_age = float(round(train_df["Age"].mean(), 4))
-    train_df["Age"].fillna(value=mean_age,
-                           inplace=True)
-    test_df["Age"].fillna(value=mean_age,
-                          inplace=True)
+    # TODO - switch to allow for different interpolation methods (e.g., mean, median, MICE)
+    if params["imputation"]["method"].lower() == "mean":
+        mean_age = float(round(train_df["Age"].mean(), 4))
+        train_df["Age"].fillna(value=mean_age,
+                               inplace=True)
+        test_df["Age"].fillna(value=mean_age,
+                              inplace=True)
 
-    # update params and save imputation scheme
-    params["imputation"] = {"Age": mean_age}
+        # update params and save imputation scheme
+        params["imputation"] = {"Age": mean_age}
+    elif params["imputation"]["method"].lower() == "mice":
+        # TODO MICE interpolation
+        raise NotImplementedError
+    else:
+        raise NotImplementedError
+
+    # update params
     new_params = yaml.safe_dump(params)
 
     with open("params.yaml", "w") as writer:
         writer.write(new_params)
 
-    # set output filenames
-    save_train_fname = os.path.basename(train_path.replace("_categorized.csv", "_nan_imputed.csv"))
-    save_test_fname = os.path.basename(test_path.replace("_categorized.csv", "_nan_imputed.csv"))
-
-    # save imputed dataframes
-    train_df.to_csv(output_dir.joinpath(save_train_fname))
-    test_df.to_csv(output_dir.joinpath(save_test_fname))
+    # save data
+    save_as_csv([train_df, test_df],
+                [train_path, test_path],
+                output_dir,
+                replace_text="_categorized.csv",
+                suffix="_nan_imputed.csv",
+                na_rep="nan")
 
 
 if __name__ == "__main__":

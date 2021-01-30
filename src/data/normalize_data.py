@@ -8,36 +8,38 @@
 #   ======================================================================
 
 import argparse
+import os
 from pathlib import Path
 
-from src.data import load_data, save_as_csv
+from src.data import load_data, load_params, save_as_csv
 
 
 def main(train_path, test_path,
          output_dir):
     """Normalize data"""
 
+    output_dir = Path(output_dir).resolve()
+    assert (os.path.isdir(output_dir)), NotADirectoryError
+
     # set vars
     norm_method = {"min_max", "z_score"}
 
-    train_df, test_df, output_dir, params = load_data(train_path,
-                                                      test_path,
-                                                      output_dir,
-                                                      load_params=True)
+    # load data
+    train_df, test_df = load_data([train_path, test_path], sep=",", header=0,
+                                  index_col="PassengerId")
+
+    # load params
+    params = load_params()
 
     # optionally normalize data
     if params["normalize"] in norm_method:
         # TODO add function to normalize data
         raise NotImplementedError
 
-    # save train
-    save_as_csv(train_df, train_path, output_dir,
-                replace_text="_nan_imputed.csv",
-                suffix="_processed.csv",
-                na_rep="nan")
-
-    # save test
-    save_as_csv(test_df, test_path, output_dir,
+    # save data
+    save_as_csv([train_df, test_df],
+                [train_path, test_path],
+                output_dir,
                 replace_text="_nan_imputed.csv",
                 suffix="_processed.csv",
                 na_rep="nan")

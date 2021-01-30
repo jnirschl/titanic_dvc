@@ -14,7 +14,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from src.data import load_data, save_as_csv
+from src.data import load_data, load_params, save_as_csv
 
 
 def main(train_path, test_path,
@@ -23,10 +23,15 @@ def main(train_path, test_path,
     """Encode categorical labels as numeric, save the processed
     dataset the label encoding dictionary"""
 
-    train_df, test_df, output_dir, params = load_data(train_path,
-                                                      test_path,
-                                                      output_dir,
-                                                      load_params=True)
+    output_dir = Path(output_dir).resolve()
+    assert (os.path.isdir(output_dir)), NotADirectoryError
+
+    # load data
+    train_df, test_df = load_data([train_path, test_path], sep=",", header=0,
+                                  index_col="PassengerId")
+
+    # load params
+    params = load_params()
 
     # update params for column data types
     param_dtypes = params["dtypes"]
@@ -58,12 +63,9 @@ def main(train_path, test_path,
         train_df = train_df.dropna(axis=0, how="any")
 
     # save data
-    save_as_csv(train_df, train_path, output_dir,
-                replace_text=".csv",
-                suffix="_categorized.csv",
-                na_rep="nan")
-
-    save_as_csv(test_df, test_path, output_dir,
+    save_as_csv([train_df, test_df],
+                [train_path, test_path],
+                output_dir,
                 replace_text=".csv",
                 suffix="_categorized.csv",
                 na_rep="nan")
