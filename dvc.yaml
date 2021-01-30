@@ -1,26 +1,41 @@
 stages:
-  prepare_data:
-    cmd: python3 src/data/make_dataset.py -o data/interim/ -tr data/raw/train.csv
-      -te data/raw/test.csv -r True
+  make_dataset:
+    desc: Download data from Kaggle, create data dictionary and summary dtable
+    cmd: python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o
+      ./data/raw
     deps:
-    - data/raw/test.csv
-    - data/raw/train.csv
-    - src/data/make_dataset.py
-    outs:
-    - data/interim/label_encoding.yaml
-    - data/interim/test_categorized.csv
-    - data/interim/train_categorized.csv
-  train_model:
-    cmd: python3 src/models/train_model.py -o results/ -tr data/interim/train_categorized.csv
-      -te data/interim/test_categorized.csv
-    deps:
-    - data/interim/test_categorized.csv
-    - data/interim/train_categorized.csv
-    - src/models/train_model.py
+      - src/data/make_dataset.py
     params:
-    - random_seed
-    - test_size
+      - dtypes
     outs:
-    - results/test_submission.csv
-    metrics:
-    - results/metrics.json
+      - data/raw/test.csv
+      - data/raw/train.csv
+      - reports/figures/data_dictionary.tex
+      - reports/figures/table_one.tex
+  encode_labels:
+    desc: Convert categorical labels to integer values and save mapping
+    cmd: python3 src/data/encode_labels.py -tr data/raw/train.csv -te data/raw/test.csv
+      -o data/interim
+    deps:
+      - data/raw/test.csv
+      - data/raw/train.csv
+      - src/data/encode_labels.py
+    params:
+      - dtypes
+    outs:
+      - data/interim/label_encoding.yaml
+      - data/interim/test_categorized.csv
+      - data/interim/train_categorized.csv
+  impute_nan:
+    desc: Replace missing values for age with mean values from training dataset.
+    cmd: python3 src/data/replace_nan.py -tr data/interim/train_categorized.csv -te
+      data/interim/test_categorized.csv -o data/interim
+    deps:
+      - data/interim/test_categorized.csv
+      - data/interim/train_categorized.csv
+      - src/data/replace_nan.py
+    params:
+      - imputation
+    outs:
+      - data/interim/test_nan_imputed.csv
+      - data/interim/train_nan_imputed.csv

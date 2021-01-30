@@ -1,0 +1,22 @@
+drop_cols:
+  - Name
+  - Cabin
+  - Ticket
+dtypes:
+  Age: float
+  Embarked: category
+  Fare: float
+  Parch: int
+  Pclass: category
+  Sex: category
+  SibSp: int
+  Survived: category
+imputation:
+  Age: 29.6991
+random_forest:
+  max_depth: None
+  min_samples_leaf: 2
+  min_samples_split: 2
+random_seed: 12345
+stratify: None
+test_size: 0.2
