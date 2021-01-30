@@ -20,18 +20,18 @@ below to proceed through the data science life cycle using DVC to manage paramet
 
 ### 1. Domain understanding/problem definition
 
-Project Charter:
+The first step any data science life cycle is to define the question and to understand the problem domain and prior knowledge. Given a well-formulated question, the team can specify the goal of the machine learning application (e.g., regression, classification, clustering, outlier detection) and how it will be measured, and which data sources will be needed. The scope of the project, key personnel, key milestones, and general project architecture/overview is specified in the Project Charter and iterated throughout the life of the project. A list of data sources which are available or need to be collected is specified in the table of data sources. Finally, the existing data is summarized in a data dictionary that describes the features, number of elements, non-null data, data type (e.g., nominal, ordinal, continuous), data range, as well as a table with key descriptive summary statistics.
 
-Problem definition: predict survival on the Kaggle Titanic dataset
-
-Dataset location: Kaggle
-
-Preferred tools and languages: SciKit-Learn, TensorFlow, HyperOpt; Python
+Deliverables Step 1:
+1. Project charter
+2. Table of data sources
+3. Data dictionary
+4. Summary table of raw dataset
 
 #### Downloading the dataset
 
 The script [make_dataset.py](src/data/make_dataset.py) will download the dataset from Kaggle, create a data dictionary,
-and summarize the dataset using [TableOne](https://pypi.org/project/tableone/). The key artifacts of this stage are
+and summarize the dataset using [TableOne](https://pypi.org/project/tableone/). The key artifacts of this DVC stage are
 the [raw training and testing datasets](data/raw), the [data_dictionary](reports/figures/data_dictionary.tex), and
 the [summary table](/reports/figures/table_one.tex).
 
@@ -47,6 +47,15 @@ dvc run -n make_dataset -p dtypes \
 --desc "Download data from Kaggle, create data dictionary and summary dtable"\
  python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o "./data/raw"
 ```
+
+### 2. Data acquisition and understanding
+
+The second step involves acquiring and exploring the data to determine the quality of the data and prepare the data for machine learning models. This step involves exploring and cleaning the data to account for missing data and noise as well as validating that data meet specified validation rules to ensure there were no errors in data collection or data entry (e.g., age and fare cannot be negative). Once the data is cleaned, it is processed to encode categorical string variables as integer classes, continuous features are discretized (optional),  and features are normalized (optional). Later stages may iteratively add or create new features from new data or existing features using feature engineering.
+
+Deliverables Step 2:
+1. Data quality report
+2. Proposed data pipeline/architecture
+3. Checkpoint decision
 
 #### Encoding categorical labels as integer classes
 
@@ -69,7 +78,7 @@ dvc run -n encode_labels -p dtypes \
 python3 src/data/encode_labels.py -tr data/raw/train.csv -te data/raw/test.csv -o data/interim
 ```
 
-#### Preparing data
+#### Cleaning and normalizing data
 
 This section involves two scripts to prepare the data for machine learning. First, missing values are imputed from the
 training data in [replace_nan.py](/src/data/replace_nan.py) and second the features are normalized
@@ -77,7 +86,7 @@ in [normalize_data.py](/src/data/normalize_data.py). Key artifacts from this sta
 the [interim nan-imputed datasets](/data/interim) and the [final processed dataset](/data/processed) after feature
 normalization.
 
-##### Replace missing age values using mean imputation
+##### Replace missing age values using imputation
 
 ``` bash
 dvc run -n impute_nan -p imputation
@@ -86,7 +95,7 @@ dvc run -n impute_nan -p imputation
 -d data/interim/test_categorized.csv
 -o data/interim/test_nan_imputed.csv
 -o data/interim/train_nan_imputed.csv
---desc "Replace missing values for age with mean values from training dataset."
+--desc "Replace missing values for age with imputed values from training dataset."
 python3 src/data/replace_nan.py -tr data/interim/train_categorized.csv -te data/interim/test_categorized.csv -o data/interim
 ```
 
@@ -102,6 +111,8 @@ dvc run -n normalize_data -p normalize \
 --desc "Optionally normalize features by fitting transforms on the training dataset." \
 python3 src/data/normalize_data.py -tr data/interim/train_nan_imputed.csv -te data/interim/test_nan_imputed.csv -o data/processed/
 ```
+
+### 2. 
 
 --------
 
