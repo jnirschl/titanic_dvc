@@ -51,10 +51,11 @@ dvc run -n make_dataset -p dtypes \
 #### Encoding categorical labels as integer classes
 
 The script [encode_labels.py](src/data/encode_labels.py) is an intermediate data processing script that accepts the raw
-training data and the "dtypes" parameter from the params.yaml file. It encodes the columns with categorical variables as
-integer values for machine processing and saves the updated dataset and encoding scheme. Importantly, the training and
-testing data is processed at the same time to ensure identical label encoding. Key artifacts from this stage include
-the [interim categorized datasets](/data/interim) and the [label encoding scheme](/data/interim/label_encoding.yaml).
+training data, and the "dtypes" parameter from the params.yaml file. It encodes the columns with categorical variables
+as integer values for machine processing and saves the updated dataset and encoding scheme. Importantly, the training
+and testing data is processed at the same time to ensure the identical label encoding. Key artifacts from this stage
+include the [interim categorized datasets](/data/interim) and
+the [label encoding scheme](/data/interim/label_encoding.yaml).
 
 ``` bash
 dvc run -n encode_labels -p dtypes \
@@ -65,7 +66,7 @@ dvc run -n encode_labels -p dtypes \
 -o data/interim/test_categorized.csv \
 -o data/interim/label_encoding.yaml \
 --desc "Convert categorical labels to integer values and save mapping" \
-python3 src/data/encode_labels.py -tr data/raw/train.csv -te data/raw/test.csv -o data/interim^
+python3 src/data/encode_labels.py -tr data/raw/train.csv -te data/raw/test.csv -o data/interim
 ```
 
 #### Preparing data

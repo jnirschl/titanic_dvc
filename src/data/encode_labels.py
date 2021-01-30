@@ -14,29 +14,19 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+from src.data import load_data
+
 
 def main(train_path, test_path,
          output_dir, remove_nan=False,
          label_dict_name="label_encoding.yaml"):
     """Encode categorical labels as numeric, save the processed
     dataset the label encoding dictionary"""
-    output_dir = Path(output_dir).resolve()
 
-    assert (os.path.isfile(train_path)), FileNotFoundError
-    assert (os.path.isfile(test_path)), FileNotFoundError
-    assert (os.path.isdir(output_dir)), NotADirectoryError
-
-    # read files
-    train_df = pd.read_csv(train_path, sep=",", header=0,
-                           na_values=["nan"],
-                           index_col="PassengerId")
-    test_df = pd.read_csv(test_path, sep=",", header=0,
-                          na_values=["nan"],
-                          index_col="PassengerId")
-
-    # read column datatypes from params.yaml
-    with open("params.yaml", 'r') as file:
-        params = yaml.safe_load(file)
+    train_df, test_df, output_dir, params = load_data(train_path,
+                                                      test_path,
+                                                      output_dir,
+                                                      load_params=True)
 
     # update params for column data types
     param_dtypes = params["dtypes"]
