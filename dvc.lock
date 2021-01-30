@@ -2,8 +2,8 @@ make_dataset:
   cmd: python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o ./data/raw
   deps:
   - path: src/data/make_dataset.py
-    md5: 2f54f3dac5ab70b9a13eb36415e77e23
-    size: 6298
+    md5: 185a4386ae4571168768d94783a474c6
+    size: 2359
   params:
     params.yaml:
       dtypes:
@@ -39,8 +39,8 @@ encode_labels:
     md5: 61fdd54abdbf6a85b778e937122e1194
     size: 61194
   - path: src/data/encode_labels.py
-    md5: 8f84e35891db7640327f06d675d40644
-    size: 3681
+    md5: d86af08312c29e68579950e4898c0e6b
+    size: 3625
   params:
     params.yaml:
       dtypes:
@@ -73,8 +73,8 @@ impute_nan:
     md5: 5d06666c95fed743140b44190fb67c77
     size: 23884
   - path: src/data/replace_nan.py
-    md5: ed6d736bc57ac0c5a3cf21a2f698dbe4
-    size: 2299
+    md5: 6b375295e66263dfd1f5b2932ebd6318
+    size: 2668
   params:
     params.yaml:
       imputation:
@@ -97,8 +97,8 @@ normalize_data:
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
   - path: src/data/normalize_data.py
-    md5: 4277606fc815d31aa49b5bec05c1753f
-    size: 1997
+    md5: 76215f3859b5b8bb9333f0e90e74e442
+    size: 1998
   params:
     params.yaml:
       normalize: None

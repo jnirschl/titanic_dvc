@@ -93,7 +93,14 @@ python3 src/data/replace_nan.py -tr data/interim/train_categorized.csv -te data/
 ##### Normalize features
 
 ``` bash
-
+dvc run -n normalize_data -p normalize \
+-d src/data/normalize_data.py \
+-d data/interim/train_nan_imputed.csv \
+-d data/interim/test_nan_imputed.csv \
+-o data/processed/train_processed.csv \
+-o data/processed/test_processed.csv \
+--desc "Optionally normalize features by fitting transforms on the training dataset." \
+python3 src/data/normalize_data.py -tr data/interim/train_nan_imputed.csv -te data/interim/test_nan_imputed.csv -o data/processed/
 ```
 
 --------
