@@ -39,3 +39,16 @@ stages:
     outs:
       - data/interim/test_nan_imputed.csv
       - data/interim/train_nan_imputed.csv
+  normalize_data:
+    desc: Optionally normalize features by fitting transforms on the training dataset.
+    cmd: python3 src/data/normalize_data.py -tr data/interim/train_nan_imputed.csv
+      -te data/interim/test_nan_imputed.csv -o data/processed/
+    deps:
+      - data/interim/test_nan_imputed.csv
+      - data/interim/train_nan_imputed.csv
+      - src/data/normalize_data.py
+    params:
+      - normalize
+    outs:
+      - data/processed/test_processed.csv
+      - data/processed/train_processed.csv

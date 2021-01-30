@@ -86,3 +86,26 @@ impute_nan:
   - path: data/interim/train_nan_imputed.csv
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
+normalize_data:
+  cmd: python3 src/data/normalize_data.py -tr data/interim/train_nan_imputed.csv -te
+    data/interim/test_nan_imputed.csv -o data/processed/
+  deps:
+  - path: data/interim/test_nan_imputed.csv
+    md5: 6a8f3b4b04186bbefb624a533d56fdeb
+    size: 11129
+  - path: data/interim/train_nan_imputed.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
+  - path: src/data/normalize_data.py
+    md5: 4277606fc815d31aa49b5bec05c1753f
+    size: 1997
+  params:
+    params.yaml:
+      normalize: None
+  outs:
+  - path: data/processed/test_processed.csv
+    md5: aa7540d1d3818bc69f943afdf4b57d39
+    size: 11132
+  - path: data/processed/train_processed.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
