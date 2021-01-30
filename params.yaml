@@ -13,6 +13,7 @@ dtypes:
   Survived: category
 imputation:
   Age: 29.6991
+normalize: None
 random_forest:
   max_depth: None
   min_samples_leaf: 2

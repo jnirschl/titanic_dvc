@@ -59,8 +59,8 @@ def main(train_path, test_path,
 
     # save data
     save_as_csv(train_df, train_path, output_dir,
-                replace_text="_nan_imputed.csv",
-                suffix="_processed.csv",
+                replace_text=".csv",
+                suffix="_categorized.csv",
                 na_rep="nan")
 
     save_as_csv(test_df, test_path, output_dir,

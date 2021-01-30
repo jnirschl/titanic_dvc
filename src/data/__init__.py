@@ -54,7 +54,7 @@ def save_as_csv(df, filepath, output_dir,
                 suffix="_processed.csv",
                 na_rep="nan"):
     """"""
-    assert (type(df) is type(pd.DataFrame)), TypeError
+    assert (type(df) is type(pd.DataFrame())), TypeError
 
     # set output filenames
     save_fname = os.path.basename(filepath.replace(replace_text,

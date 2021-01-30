@@ -2,8 +2,8 @@ make_dataset:
   cmd: python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o ./data/raw
   deps:
   - path: src/data/make_dataset.py
-    md5: a9455ccbe0ab5ce4912ef7d1b8278a18
-    size: 6230
+    md5: 2f54f3dac5ab70b9a13eb36415e77e23
+    size: 6298
   params:
     params.yaml:
       dtypes:
@@ -39,8 +39,8 @@ encode_labels:
     md5: 61fdd54abdbf6a85b778e937122e1194
     size: 61194
   - path: src/data/encode_labels.py
-    md5: 7b57902b48cbecf6f0a094fb101a2c8e
-    size: 3808
+    md5: 8f84e35891db7640327f06d675d40644
+    size: 3681
   params:
     params.yaml:
       dtypes:
