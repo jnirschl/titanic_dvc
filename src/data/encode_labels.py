@@ -14,7 +14,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from src.data import load_data
+from src.data import load_data, save_as_csv
 
 
 def main(train_path, test_path,
@@ -57,15 +57,16 @@ def main(train_path, test_path,
     if remove_nan:
         train_df = train_df.dropna(axis=0, how="any")
 
-    # set output filenames
-    save_train_fname = os.path.basename(train_path.replace(".csv", "_categorized.csv"))
-    save_test_fname = os.path.basename(test_path.replace(".csv", "_categorized.csv"))
+    # save data
+    save_as_csv(train_df, train_path, output_dir,
+                replace_text="_nan_imputed.csv",
+                suffix="_processed.csv",
+                na_rep="nan")
 
-    # save updated dataframes
-    train_df.to_csv(output_dir.joinpath(save_train_fname),
-                    na_rep='nan')
-    test_df.to_csv(output_dir.joinpath(save_test_fname),
-                   na_rep='nan')  # test cols starts from 1 because survival status is hidden
+    save_as_csv(test_df, test_path, output_dir,
+                replace_text=".csv",
+                suffix="_categorized.csv",
+                na_rep="nan")
 
     # save and encoding dictionaries
     encoding_dict = yaml.safe_dump(encoding_dict)
