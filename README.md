@@ -20,9 +20,16 @@ below to proceed through the data science life cycle using DVC to manage paramet
 
 ### 1. Domain understanding/problem definition
 
-The first step any data science life cycle is to define the question and to understand the problem domain and prior knowledge. Given a well-formulated question, the team can specify the goal of the machine learning application (e.g., regression, classification, clustering, outlier detection) and how it will be measured, and which data sources will be needed. The scope of the project, key personnel, key milestones, and general project architecture/overview is specified in the Project Charter and iterated throughout the life of the project. A list of data sources which are available or need to be collected is specified in the table of data sources. Finally, the existing data is summarized in a data dictionary that describes the features, number of elements, non-null data, data type (e.g., nominal, ordinal, continuous), data range, as well as a table with key descriptive summary statistics.
+The first step any data science life cycle is to define the question and to understand the problem domain and prior
+knowledge. Given a well-formulated question, the team can specify the goal of the machine learning application (e.g.,
+regression, classification, clustering, outlier detection) and how it will be measured, and which data sources will be
+needed. The scope of the project, key personnel, key milestones, and general project architecture/overview is specified
+in the Project Charter and iterated throughout the life of the project. A list of data sources which are available or
+need to be collected is specified in the table of data sources. Finally, the existing data is summarized in a data
+dictionary that describes the features, number of elements, non-null data, data type (e.g., nominal, ordinal,
+continuous), data range, as well as a table with key descriptive summary statistics.
 
-Deliverables Step 1:
+*Deliverables Step 1:*
 1. Project charter
 2. Table of data sources
 3. Data dictionary
@@ -50,9 +57,14 @@ dvc run -n make_dataset -p dtypes \
 
 ### 2. Data acquisition and understanding
 
-The second step involves acquiring and exploring the data to determine the quality of the data and prepare the data for machine learning models. This step involves exploring and cleaning the data to account for missing data and noise as well as validating that data meet specified validation rules to ensure there were no errors in data collection or data entry (e.g., age and fare cannot be negative). Once the data is cleaned, it is processed to encode categorical string variables as integer classes, continuous features are discretized (optional),  and features are normalized (optional). Later stages may iteratively add or create new features from new data or existing features using feature engineering.
+The second step involves acquiring and exploring the data to determine the quality of the data and prepare the data for
+machine learning models. This step involves exploring and cleaning the data to account for missing data and noise as
+well as validating that data meet specified validation rules to ensure there were no errors in data collection or data
+entry (e.g., age and fare cannot be negative). Once the data is cleaned, it is processed to encode categorical string
+variables as integer classes, continuous features are discretized (optional), and features are normalized (optional).
+Later stages may iteratively add or create new features from new data or existing features using feature engineering.
 
-Deliverables Step 2:
+*Deliverables Step 2:*
 1. Data quality report
 2. Proposed data pipeline/architecture
 3. Checkpoint decision
@@ -78,13 +90,16 @@ dvc run -n encode_labels -p dtypes \
 python3 src/data/encode_labels.py -tr data/raw/train.csv -te data/raw/test.csv -o data/interim
 ```
 
-#### Cleaning and normalizing data
+#### Cleaning data
 
-This section involves two scripts to prepare the data for machine learning. First, missing values are imputed from the
-training data in [replace_nan.py](/src/data/replace_nan.py) and second the features are normalized
-in [normalize_data.py](/src/data/normalize_data.py). Key artifacts from this stage include
-the [interim nan-imputed datasets](/data/interim) and the [final processed dataset](/data/processed) after feature
-normalization.
+This section involves preparing the data for machine learning. First, missing values are imputed from the training data
+in [replace_nan.py](/src/data/replace_nan.py). Next, feature engineering is used to create additional informative
+representations. Once initial feature engineering is complete, the feature set is explored to identify correlated
+features and optionally the feature set is reduced using dimensionality reduction techniques. Once a set of feature is
+identified, the data is optionally [normalize_data.py](/src/features/normalize.py). Key artifacts from this stage
+include the [interim nan-imputed datasets](/data/interim), a [Jupyter notebook](/notebooks)
+exploring the dataset and features, [interim feature engineering datasets](/data/interim), and the
+[final processed dataset](/data/processed) after feature normalization.
 
 ##### Replace missing age values using imputation
 
@@ -99,20 +114,73 @@ dvc run -n impute_nan -p imputation
 python3 src/data/replace_nan.py -tr data/interim/train_categorized.csv -te data/interim/test_categorized.csv -o data/interim
 ```
 
+#### Feature engineering
+
+1. Engineer new features
+2. Show feature correlation
+3. Identify importance
+
+``` bash
+dvc run -n build_features -p random_seed,feature_eng \
+-d src/features/build_features.py
+-d data/interim/train_nan_imputed.csv
+-d data/interim/test_nan_imputed.csv
+-o data/interim/train_featurized.csv
+-o data/interim/test_featurized.csv
+--desc "Optional feature engineering and dimensionality reduction"
+python3 src/features/build_features.py -tr data/interim/train_nan_imputed.csv -te data/interim/test_nan_imputed.csv -o data/interim/  
+```
+
 ##### Normalize features
 
 ``` bash
 dvc run -n normalize_data -p normalize \
--d src/data/normalize_data.py \
+-d src/features/normalize.py \
 -d data/interim/train_nan_imputed.csv \
 -d data/interim/test_nan_imputed.csv \
 -o data/processed/train_processed.csv \
 -o data/processed/test_processed.csv \
 --desc "Optionally normalize features by fitting transforms on the training dataset." \
-python3 src/data/normalize_data.py -tr data/interim/train_nan_imputed.csv -te data/interim/test_nan_imputed.csv -o data/processed/
+python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te data/interim/test_featurized.csv -o data/processed/
 ```
 
-### 2. 
+### 3. Modeling
+
+##### Split data into the train, dev, and test sets
+
++ Data split report
+
+```bash
+dvc run -n split_train_dev -p random_seed,train_test_split \
+-d src/data/split_train_dev.py \
+-d data/processed/train_processed.csv \
+-o data/processed/split_train_dev.csv \
+--desc "Split training data into the train and dev sets using stratified K-fold cross validation." \
+python3 src/data/split_train_dev.py -tr data/processed/train_processed.csv  -o data/processed/
+```
+
+#### Model training
+
+``` bash
+dvc run -n [STAGE NAME] -p params \
+-d src/models/###.py
+-d data/processed/train_nan_imputed.csv
+-d data/processed/test_nan_imputed.csv
+-o models/### TRAINED MODEL
+-m models/### METRICS
+--desc "Train model using processed data and specified algorithm"
+python3 src/models/###.py  
+```
+
+### 4. Deployment
+
+#### Status dashboard
+
++ Display system health
++ Final modeling report
++ Final solution architecture
+
+### 5. Project conclusion
 
 --------
 

@@ -23,3 +23,5 @@ train_test_split:
   target_class: "Survived"
   n_split: 10
   shuffle: True
+feature_eng:
+  featurize: False

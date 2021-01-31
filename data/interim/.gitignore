@@ -3,3 +3,5 @@
 /label_encoding.yaml
 /test_nan_imputed.csv
 /train_nan_imputed.csv
+/train_featurized.csv
+/test_featurized.csv

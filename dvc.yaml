@@ -39,3 +39,43 @@ stages:
     outs:
       - data/interim/test_nan_imputed.csv
       - data/interim/train_nan_imputed.csv
+  build_features:
+    desc: Optional feature engineering and dimensionality reduction
+    cmd: python3 src/features/build_features.py -tr data/interim/train_nan_imputed.csv
+      -te data/interim/test_nan_imputed.csv -o data/interim/
+    deps:
+      - data/interim/test_nan_imputed.csv
+      - data/interim/train_nan_imputed.csv
+      - src/features/build_features.py
+    params:
+      - feature_eng
+      - random_seed
+    outs:
+      - data/interim/test_featurized.csv
+      - data/interim/train_featurized.csv
+  normalize_data:
+    desc: Optionally normalize features by fitting transforms on the training dataset.
+    cmd: python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te
+      data/interim/test_featurized.csv -o data/processed/
+    deps:
+      - data/interim/test_nan_imputed.csv
+      - data/interim/train_nan_imputed.csv
+      - src/features/normalize.py
+    params:
+      - normalize
+    outs:
+      - data/processed/test_processed.csv
+      - data/processed/train_processed.csv
+  split_train_dev:
+    desc: Split training data into the train and dev sets using stratified K-fold
+      cross validation.
+    cmd: python3 src/data/split_train_dev.py -tr data/processed/train_processed.csv
+      -o data/processed/
+    deps:
+      - data/processed/train_processed.csv
+      - src/data/split_train_dev.py
+    params:
+      - random_seed
+      - train_test_split
+    outs:
+      - data/processed/split_train_dev.csv
