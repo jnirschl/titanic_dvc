@@ -59,6 +59,10 @@ def load_data(data_path,
         output_df.append(pd.read_csv(elem, sep=sep, header=header,
                                      index_col=index_col))
 
+    # if single file as input, return single df not a list
+    if len(output_df) == 1:
+        output_df = output_df[0]
+
     return output_df
 
 
