@@ -12,69 +12,69 @@ import os
 from pathlib import Path
 
 import pandas as pd
-import yaml
 from sklearn.model_selection import StratifiedKFold
-from src.data import load_data
+
+from src.data import load_data, load_params
 
 
-def main(train_path, output_dir,
-         test_path=None):
-    """Split data into train, dev, and test"""
+def main(train_path, output_dir):
+    """Split data into train and dev sets"""
+
+    assert (os.path.isdir(output_dir)), NotADirectoryError
+    output_dir = Path(output_dir).resolve()
+
     # read file
-    train_df, test_df, output_dir, params = load_data(train_path,
-                                                      test_path,
-                                                      output_dir,
-                                                      load_params=True)
+    train_df = load_data(train_path,
+                         sep=",", header=0,
+                         index_col="PassengerId")
 
-    params_split = params['split_train_dev']
+    # load params
+    params = load_params()
+    params_split = params['train_test_split']
     params_split["random_seed"] = params["random_seed"]
 
     # get independent variables (features) and
     # dependent variables (labels)
     train_feats = train_df.drop(params_split["target_class"], axis=1)
     train_labels = train_df[params_split["target_class"]]
-    test_feats = test_df
 
-    # set column upon which to stratify, if applicable
-    if params_split['stratify'] is not None:
-        raise NotImplementedError
-        # TODO
-
-    # stratified K-fold to split train, dev, and test using random seed
-    skf = StratifiedKFold(n_splits=params_split['n_splits'],
+    # K-fold split into train and dev sets stratified by train_labels
+    # using random seed for reproducibility
+    skf = StratifiedKFold(n_splits=params_split['n_split'],
                           random_state=params_split['random_seed'],
-                          shuffle=True)
+                          shuffle=params_split['shuffle'])
 
-    # create splits based on train_labels
-    train_idx, test_idx = skf.split(train_feats, train_labels)
+    # create splits
+    split_df = pd.DataFrame()
+    for n_fold, (train_idx, test_idx) in enumerate(skf.split(train_feats,
+                                                             train_labels)):
+        fold_name = f"fold_{n_fold + 1:02d}"
 
-    # x_train, x_dev, y_train, y_dev = train_test_split(train_feats, train_labels,
-    #                                                   test_size=test_size,
-    #                                                   random_state=random_seed)
+        # create intermediate dataframe for each fold
+        temp_df = pd.DataFrame({"PassengerId": train_idx,
+                                fold_name: "train"}).set_index("PassengerId")
+        temp_df = temp_df.append(pd.DataFrame({"PassengerId": test_idx,
+                                               fold_name: "test"}).set_index("PassengerId"))
 
-    if test_path:
-        assert (os.path.isfile(test_path)), FileNotFoundError
+        # append first fold to empty dataframe or join cols if n_fold > 0
+        split_df = split_df.append(temp_df) if n_fold == 0 else split_df.join(temp_df)
+
+    # sort by index
+    split_df = split_df.sort_index()
+
+    # save output dataframe with indices for train and dev sets
+    split_df.to_csv(output_dir.joinpath("split_train_dev.csv"),
+                    na_rep="nan")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-tr", "--train", dest="train_path",
                         required=True, help="Train CSV file")
-    parser.add_argument("-te", "--test", dest="test_path",
-                        required=True, help="Test CSV file")
     parser.add_argument("-o", "--out-dir", dest="output_dir",
-                        default=Path("./data/ ").resolve(),
+                        default=Path("./data/processed ").resolve(),
                         required=False, help="output directory")
-    parser.add_argument("-r", "--remove-nan", dest="remove_nan",
-                        default=False, required=False,
-                        help="Remove nan rows from training dataset")
-    parser.add_argument("-l", "--label", dest="label_dict_name",
-                        default="label_encoding.yaml",
-                        required=False, help="Name for dictionary mapping category codes to text")
     args = parser.parse_args()
 
     # split data into train and dev sets
-    main(args.train_path, args.test_path,
-         args.output_dir,
-         remove_nan=args.remove_nan,
-         label_dict_name=args.label_dict_name)
+    main(args.train_path, args.output_dir)

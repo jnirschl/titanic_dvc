@@ -13,12 +13,13 @@ dtypes:
   Survived: category
 imputation:
   Age: 29.6991
-  method: mean
 normalize: None
 random_forest:
   max_depth: None
   min_samples_leaf: 2
   min_samples_split: 2
 random_seed: 12345
-stratify: None
-test_size: 0.2
+train_test_split:
+  target_class: "Survived"
+  n_split: 10
+  shuffle: True

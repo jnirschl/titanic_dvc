@@ -52,3 +52,16 @@ stages:
     outs:
       - data/processed/test_processed.csv
       - data/processed/train_processed.csv
+  split_train_dev:
+    desc: Split training data in to train and dev sets using stratified K-fold cross
+      validation.
+    cmd: python3 src/data/split_train_dev.py -tr data/processed/train_processed.csv
+      -o data/processed/
+    deps:
+      - data/processed/train_processed.csv
+      - src/data/split_train_dev.py
+    params:
+      - random_seed
+      - train_test_split
+    outs:
+      - data/processed/split_train_dev.csv

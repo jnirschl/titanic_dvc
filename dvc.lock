@@ -109,3 +109,24 @@ normalize_data:
   - path: data/processed/train_processed.csv
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
+split_train_dev:
+  cmd: python3 src/data/split_train_dev.py -tr data/processed/train_processed.csv
+    -o data/processed/
+  deps:
+  - path: data/processed/train_processed.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
+  - path: src/data/split_train_dev.py
+    md5: 5b39923281d4fc59839e236664d5d0ea
+    size: 2978
+  params:
+    params.yaml:
+      random_seed: 12345
+      train_test_split:
+        target_class: Survived
+        n_split: 10
+        shuffle: true
+  outs:
+  - path: data/processed/split_train_dev.csv
+    md5: d4d2c3159380a986fc2f04a8bcffda08
+    size: 56115
