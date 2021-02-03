@@ -115,10 +115,10 @@ normalize_data:
   cmd: python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te
     data/interim/test_featurized.csv -o data/processed/
   deps:
-  - path: data/interim/test_nan_imputed.csv
+  - path: data/interim/test_featurized.csv
     md5: aa7540d1d3818bc69f943afdf4b57d39
     size: 11132
-  - path: data/interim/train_nan_imputed.csv
+  - path: data/interim/train_featurized.csv
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
   - path: src/features/normalize.py

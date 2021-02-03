@@ -136,8 +136,8 @@ python3 src/features/build_features.py -tr data/interim/train_nan_imputed.csv -t
 ``` bash
 dvc run -n normalize_data -p normalize \
 -d src/features/normalize.py \
--d data/interim/train_nan_imputed.csv \
--d data/interim/test_nan_imputed.csv \
+-d data/interim/train_featurized.csv \
+-d data/interim/test_featurized.csv \
 -o data/processed/train_processed.csv \
 -o data/processed/test_processed.csv \
 --desc "Optionally normalize features by fitting transforms on the training dataset." \

@@ -58,8 +58,8 @@ stages:
     cmd: python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te
       data/interim/test_featurized.csv -o data/processed/
     deps:
-      - data/interim/test_nan_imputed.csv
-      - data/interim/train_nan_imputed.csv
+      - data/interim/test_featurized.csv
+      - data/interim/train_featurized.csv
       - src/features/normalize.py
     params:
       - normalize
