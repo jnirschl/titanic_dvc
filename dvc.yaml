@@ -79,3 +79,21 @@ stages:
       - train_test_split
     outs:
       - data/processed/split_train_dev.csv
+  train_model:
+    desc: Train the specified classifier using the pre-allocated stratified K-fold
+      cross validation splits and the current params.yaml settings.
+    cmd: python3 src/models/train_model.py -tr data/processed/train_processed.csv
+      -cv data/processed/split_train_dev.csv
+    deps:
+      - data/processed/split_train_dev.csv
+      - data/processed/train_processed.csv
+      - src/models/train_model.py
+    params:
+      - classifier
+      - model_params
+      - random_seed
+      - train_test_split.target_class
+    outs:
+      - models/estimator.pkl
+    metrics:
+      - results/metrics.json

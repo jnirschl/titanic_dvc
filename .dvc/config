@@ -2,3 +2,5 @@
     remote = origin
 ['remote "origin"']
     url = https://d7a238121e51f41478b63e9f6b3835ff0c65a094@dagshub.com/jnirschl/titanic_dvc.dvc
+['remote "gdrive_titanic_dvc"']
+    url = gdrive://1sYaoZqV2kJ4-fWncfUfQGrm_1GUvAoH5

@@ -155,3 +155,37 @@ split_train_dev:
   - path: data/processed/split_train_dev.csv
     md5: d4d2c3159380a986fc2f04a8bcffda08
     size: 56115
+train_model:
+  cmd: python3 src/models/train_model.py -tr data/processed/train_processed.csv -cv
+    data/processed/split_train_dev.csv
+  deps:
+  - path: data/processed/split_train_dev.csv
+    md5: d4d2c3159380a986fc2f04a8bcffda08
+    size: 56115
+  - path: data/processed/train_processed.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
+  - path: src/models/train_model.py
+    md5: 3eb47ed784933b5bc895af420e6c8e07
+    size: 4285
+  params:
+    params.yaml:
+      classifier: random_forest
+      model_params:
+        support_vector_machine:
+        logistic_regression:
+        naive_bayes:
+        neural_network:
+        random_forest:
+          max_depth:
+          min_samples_leaf: 2
+          min_samples_split: 2
+      random_seed: 12345
+      train_test_split.target_class: Survived
+  outs:
+  - path: models/estimator.pkl
+    md5: 25ffeed372b8c2c082b8b59963b333cb
+    size: 760
+  - path: results/metrics.json
+    md5: 3c5a30b6fae2995b9f78f45b8e7a058d
+    size: 321

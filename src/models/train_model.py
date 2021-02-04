@@ -7,112 +7,106 @@
 #   Time-stamp: <>
 #   ======================================================================
 
-import os
 import argparse
-import pathlib
-import pandas as pd
-import numpy as np
-import yaml
 import json
+import os
+import pickle
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_auc_score, accuracy_score
+from sklearn.metrics import make_scorer
+from sklearn.model_selection import cross_validate
 
-# read params from src/models/params.ysml
-with open("params.yaml", 'r') as file:
-    params = yaml.safe_load(file)
-
-random_seed = params['random_seed']
-test_size = params['test_size']
-stratify = params['stratify']
-max_depth = params["random_forest"]["max_depth"]
-min_samples_leaf = params["random_forest"]["min_samples_leaf"]
-min_samples_split = params["random_forest"]["min_samples_split"]
+from src.data import load_data, load_params
+from src.models.metrics import gmpr_score
 
 
-def train(train_path, test_path, output_dir,
-          test_size=test_size,
-          stratify=None,
-          random_seed=random_seed):
+def main(train_path, cv_idx_path,
+         results_dir, model_dir):
     """Train RandomForest model and predict survival on
     Kaggle test set"""
-    assert (os.path.isfile(train_path)), FileNotFoundError
-    assert (os.path.isfile(test_path)), FileNotFoundError
-    assert (os.path.isdir(output_dir)), NotADirectoryError
+    assert (os.path.isdir(results_dir)), NotADirectoryError
+    assert (os.path.isdir(model_dir)), NotADirectoryError
+    results_dir = Path(results_dir).resolve()
+    model_dir = Path(model_dir).resolve()
 
     # read files
-    train_df = pd.read_csv(train_path, sep=",", header=0,
-                           index_col="PassengerId")
-    test_df = pd.read_csv(test_path, sep=",", header=0,
-                           index_col="PassengerId")
+    train_df, cv_idx = load_data([train_path, cv_idx_path],
+                                 sep=",", header=0,
+                                 index_col="PassengerId")
+    # load params
+    params = load_params()
+    classifier = params["classifier"]
+    target_class = params["train_test_split"]["target_class"]
+    model_params = params["model_params"][classifier]
 
     # get independent variables (features) and
     # dependent variables (labels)
-    train_feats = train_df.drop("Survived", axis=1)
-    train_labels = train_df["Survived"]
-    test_feats = test_df
-
-    # set column upon which to stratify, if applicable
-    # if stratify is not None:
-    #     stratify = train_feats[stratify]
-
-    # split into train and dev using random seed
-    x_train, x_dev, y_train, y_dev = train_test_split(train_feats, train_labels,
-                                                      test_size=test_size,
-                                                      random_state=random_seed)
+    train_feats = train_df.drop(target_class, axis=1)
+    train_labels = train_df[target_class]
 
     # create instance using random seed for reproducibility
-    RFmodel = RandomForestClassifier(random_state=random_seed)
+    if classifier.lower() == "random_forest":
+        model = RandomForestClassifier(**model_params,
+                                       random_state=params["random_seed"])
+    else:
+        raise NotImplementedError
 
-    # fit model on training data
-    RFmodel.fit(x_train, y_train)
+    # create generator with cv splits
+    split_generator = ((np.where(cv_idx[col] == "train")[0],
+                        np.where(cv_idx[col] == "test")[0]) for col in cv_idx)
 
-    # check performance on dev set
-    yhat_dev = RFmodel.predict(x_dev)
-    auc_dev = roc_auc_score(y_dev, yhat_dev)
-    acc_dev = accuracy_score(yhat_dev, y_dev)
+    # set model scoring metrics
+    # TODO - add custom metric for GMPR
+    scoring = {'accuracy': 'accuracy', 'balanced_accuracy': 'balanced_accuracy',
+               'f1': 'f1',
+               "gmpr": make_scorer(gmpr_score, greater_is_better=True),
+               'jaccard': 'jaccard', 'precision': 'precision',
+               'recall': 'recall', 'roc_auc': 'roc_auc'}
 
-    # fill nans with column mean on test set
-    if any(test_feats.isna().any()):
-        test_feats.fillna(value=train_feats.mean()[["Age", "Fare"]],
-                          inplace=True)
+    # train using cross validation
+    cv_output = cross_validate(model, train_feats.to_numpy(),
+                               train_labels.to_numpy(),
+                               cv=split_generator,
+                               fit_params=None,
+                               scoring=scoring,
+                               return_estimator=True)
 
-    # predict on Kaggle test set
-    yhat_test = RFmodel.predict(test_feats)
-    yhat_test = pd.Series(yhat_test,
-                          name="Survived",
-                          index=test_feats.index,
-                          dtype=np.int)
+    # get cv estimators
+    cv_estimators = cv_output.pop('estimator')
+    cv_metrics = pd.DataFrame(cv_output)
 
-    # save output
-    output_dir = pathlib.Path(output_dir)
+    # rename columns
+    col_mapper = dict(zip(cv_metrics.columns,
+                          [elem.replace('test_', '') for elem in cv_metrics.columns]))
+    cv_metrics = cv_metrics.rename(columns=col_mapper)
 
-    # save submission
-    yhat_test.to_csv(output_dir.joinpath("test_submission.csv"),
-                     header=True)
+    # save cv estimators as pickle file
+    with open(model_dir.joinpath("estimator.pkl"), "wb") as file:
+        pickle.dump(model, file)
 
     # save metrics
-    metrics = json.dumps({"AUC":auc_dev, "Accuracy":acc_dev})
-    with open(output_dir.joinpath("metrics.json"), "w") as writer:
+    metrics = json.dumps(dict(cv_metrics.mean()))
+    with open(results_dir.joinpath("metrics.json"), "w") as writer:
         writer.writelines(metrics)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--out-dir", dest="output_dir",
-                        required=True, help="output directory")
     parser.add_argument("-tr", "--train", dest="train_path",
                         required=True, help="Train CSV file")
-    parser.add_argument("-te", "--test", dest="test_path",
-                        required=True, help="Test CSV file")
-    parser.add_argument("-s", "--stratify", dest="stratify",
-                        default=None, required=False,
-                        help="Stratify when splitting train/dev")
+    parser.add_argument("-cv", "--cvindex", dest="cv_index",
+                        required=True, help="CSV file with train/dev split")
+    parser.add_argument("-rd", "--results-dir", dest="results_dir",
+                        default=Path("./results").resolve(),
+                        required=False, help="Metrics output directory")
+    parser.add_argument("-md", "--model-dir", dest="model_dir",
+                        default=Path("./models").resolve(),
+                        required=False, help="Model output directory")
     args = parser.parse_args()
 
     # train model
-    train(args.train_path, args.test_path, args.output_dir,
-          random_seed=random_seed, test_size=test_size,
-          stratify=stratify)  # , max_depth=max_depth,
-    # min_samples_leaf=min_samples_leaf,
-    # min_samples_split=min_samples_split)
+    main(args.train_path, args.cv_index,
+         args.results_dir, args.model_dir)
