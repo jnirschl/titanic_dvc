@@ -105,13 +105,13 @@ exploring the dataset and features, [interim feature engineering datasets](/data
 
 ``` bash
 dvc run -n impute_nan -p imputation
--d src/data/replace_nan.py
--d data/interim/train_categorized.csv
--d data/interim/test_categorized.csv
--o data/interim/test_nan_imputed.csv
--o data/interim/train_nan_imputed.csv
---desc "Replace missing values for age with imputed values from training dataset."
-python3 src/data/replace_nan.py -tr data/interim/train_categorized.csv -te data/interim/test_categorized.csv -o data/interim
+    -d src/data/replace_nan.py
+    -d data/interim/train_categorized.csv
+    -d data/interim/test_categorized.csv
+    -o data/interim/test_nan_imputed.csv
+    -o data/interim/train_nan_imputed.csv
+    --desc "Replace missing values for age with imputed values from training dataset."
+    python3 src/data/replace_nan.py -tr data/interim/train_categorized.csv -te data/interim/test_categorized.csv -o data/interim
 ```
 
 #### Feature engineering
@@ -122,26 +122,26 @@ python3 src/data/replace_nan.py -tr data/interim/train_categorized.csv -te data/
 
 ``` bash
 dvc run -n build_features -p random_seed,feature_eng \
--d src/features/build_features.py
--d data/interim/train_nan_imputed.csv
--d data/interim/test_nan_imputed.csv
--o data/interim/train_featurized.csv
--o data/interim/test_featurized.csv
---desc "Optional feature engineering and dimensionality reduction"
-python3 src/features/build_features.py -tr data/interim/train_nan_imputed.csv -te data/interim/test_nan_imputed.csv -o data/interim/  
+    -d src/features/build_features.py
+    -d data/interim/train_nan_imputed.csv
+    -d data/interim/test_nan_imputed.csv
+    -o data/interim/train_featurized.csv
+    -o data/interim/test_featurized.csv
+    --desc "Optional feature engineering and dimensionality reduction"
+    python3 src/features/build_features.py -tr data/interim/train_nan_imputed.csv -te data/interim/test_nan_imputed.csv -o data/interim/  
 ```
 
 ##### Normalize features
 
 ``` bash
 dvc run -n normalize_data -p normalize \
--d src/features/normalize.py \
--d data/interim/train_featurized.csv \
--d data/interim/test_featurized.csv \
--o data/processed/train_processed.csv \
--o data/processed/test_processed.csv \
---desc "Optionally normalize features by fitting transforms on the training dataset." \
-python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te data/interim/test_featurized.csv -o data/processed/
+    -d src/features/normalize.py \
+    -d data/interim/train_featurized.csv \
+    -d data/interim/test_featurized.csv \
+    -o data/processed/train_processed.csv \
+    -o data/processed/test_processed.csv \
+    --desc "Optionally normalize features by fitting transforms on the training dataset." \
+    python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te data/interim/test_featurized.csv -o data/processed/
 ```
 
 ### 3. Modeling
@@ -152,24 +152,24 @@ python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te data
 
 ```bash
 dvc run -n split_train_dev -p random_seed,train_test_split \
--d src/data/split_train_dev.py \
--d data/processed/train_processed.csv \
--o data/processed/split_train_dev.csv \
---desc "Split training data into the train and dev sets using stratified K-fold cross validation." \
-python3 src/data/split_train_dev.py -tr data/processed/train_processed.csv  -o data/processed/
+    -d src/data/split_train_dev.py \
+    -d data/processed/train_processed.csv \
+    -o data/processed/split_train_dev.csv \
+    --desc "Split training data into the train and dev sets using stratified K-fold cross validation." \
+    python3 src/data/split_train_dev.py -tr data/processed/train_processed.csv  -o data/processed/
 ```
 
 #### Model training
 
 ``` bash
-dvc run -n [STAGE NAME] -p params \
--d src/models/###.py
--d data/processed/train_nan_imputed.csv
--d data/processed/test_nan_imputed.csv
--o models/### TRAINED MODEL
--m models/### METRICS
---desc "Train model using processed data and specified algorithm"
-python3 src/models/###.py  
+dvc run -n train_model -p classifier,model_params,random_seed,train_test_split.target_class \
+    -d src/models/train_model.py \
+    -d data/processed/train_processed.csv \
+    -d data/processed/split_train_dev.csv \
+    -o models/estimator.pkl \
+    -m results/metrics.json \
+    --desc "Train the specified classifier using the pre-allocated stratified K-fold cross validation splits and the current params.yaml settings." \
+    python3 src/models/train_model.py -tr data/processed/train_processed.csv -cv data/processed/split_train_dev.csv
 ```
 
 ### 4. Deployment
