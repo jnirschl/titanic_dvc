@@ -166,8 +166,8 @@ train_model:
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
   - path: src/models/train_model.py
-    md5: 49c334c211d9f03fb2afc589646e7e06
-    size: 7593
+    md5: 5de6d105914a15b3f937495d51ce7b0e
+    size: 4274
   params:
     params.yaml:
       classifier: random_forest
@@ -187,5 +187,5 @@ train_model:
     md5: 25ffeed372b8c2c082b8b59963b333cb
     size: 760
   - path: results/metrics.json
-    md5: b1a01e2aa8de6a68186296cd2398545d
+    md5: 1773491ab66b6455fad257ac1532bbb3
     size: 320
