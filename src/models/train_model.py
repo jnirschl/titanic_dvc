@@ -55,8 +55,8 @@ def main(train_path, cv_idx_path,
         raise NotImplementedError
 
     # create generator with cv splits
-    split_generator = ((np.where(cv_idx[col] == "train")[0],
-                        np.where(cv_idx[col] == "test")[0]) for col in cv_idx)
+    split_generator = iter((np.where(cv_idx[col] == "train")[0],
+                            np.where(cv_idx[col] == "test")[0]) for col in cv_idx)
 
     # set model scoring metrics
     # TODO - add custom metric for GMPR
