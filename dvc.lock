@@ -172,7 +172,6 @@ train_model:
     params.yaml:
       classifier: random_forest
       model_params:
-        support_vector_machine:
         logistic_regression:
         naive_bayes:
         neural_network:
@@ -180,6 +179,7 @@ train_model:
           max_depth:
           min_samples_leaf: 2
           min_samples_split: 2
+        support_vector_machine:
       random_seed: 12345
       train_test_split.target_class: Survived
   outs:
@@ -187,5 +187,5 @@ train_model:
     md5: 25ffeed372b8c2c082b8b59963b333cb
     size: 760
   - path: results/metrics.json
-    md5: 1773491ab66b6455fad257ac1532bbb3
-    size: 320
+    md5: 85532c0da37763fda27f731992193daf
+    size: 321
