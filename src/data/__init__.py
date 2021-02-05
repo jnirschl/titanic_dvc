@@ -32,6 +32,29 @@ def load_params(filepath="params.yaml") -> dict:
     return params
 
 
+def convert_none_to_null(params):
+    """Convert None values in params.yaml into null to ensure
+    correct reading/writing as None type"""
+    if isinstance(params, list):
+        params[:] = [convert_none_to_null(elem) for elem in params]
+    elif isinstance(params, dict):
+        for k, v in params.items():
+            params[k] = convert_none_to_null(v)
+    return 'null' if params is None else params
+
+
+def save_params(params):
+    """"""
+    # convert None values to null
+    convert_none_to_null(params)
+
+    # save params
+    new_params = yaml.safe_dump(params)
+
+    with open("params2.yaml", 'w') as writer:
+        writer.write(new_params)
+
+
 def load_data(data_path,
               sep=",",
               header=None,
