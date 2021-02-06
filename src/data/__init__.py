@@ -77,11 +77,8 @@ def load_data(data_path,
         data_path = [data_path]
 
     # loop over filepath in list and read file
-    output_df = []
-    for elem in data_path:
-        output_df.append(pd.read_csv(elem, sep=sep, header=header,
-                                     index_col=index_col))
-
+    output_df = [pd.read_csv(elem, sep=sep, header=header,
+                                     index_col=index_col) for elem in data_path]
     # if single file as input, return single df not a list
     if len(output_df) == 1:
         output_df = output_df[0]
