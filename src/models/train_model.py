@@ -85,7 +85,7 @@ def main(train_path, cv_idx_path,
 
     # save cv estimators as pickle file
     with open(model_dir.joinpath("estimator.pkl"), "wb") as file:
-        pickle.dump(model, file)
+        pickle.dump(cv_estimators, file)
 
     # save metrics
     metrics = json.dumps(dict(cv_metrics.mean()))

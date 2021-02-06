@@ -166,8 +166,8 @@ train_model:
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
   - path: src/models/train_model.py
-    md5: 5de6d105914a15b3f937495d51ce7b0e
-    size: 4274
+    md5: 5aa9cf142afe306f597ff7d406b7c539
+    size: 4282
   params:
     params.yaml:
       classifier: random_forest
@@ -185,8 +185,8 @@ train_model:
       train_test_split.target_class: Survived
   outs:
   - path: models/estimator.pkl
-    md5: f9295ffa633ec68239266512a32dabcc
-    size: 773
+    md5: 83e0e355b40b1e2bef449e71c478ad0b
+    size: 9603720
   - path: results/metrics.json
-    md5: fedbbe70e656a20821d0efba261b23e2
-    size: 319
+    md5: 090e4674f67dd5d0e6418f7337c56b3e
+    size: 318
