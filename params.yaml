@@ -16,7 +16,7 @@ feature_eng:
   featurize: false
 imputation:
   Age: 29.6991
-  method: mean
+  Fare: 32.2042
 model_params:
   logistic_regression: null
   naive_bayes: null

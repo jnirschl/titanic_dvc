@@ -34,13 +34,17 @@ def main(train_path, test_path,
     # TODO - switch to allow for different interpolation methods (e.g., mean, median, MICE)
     if params["imputation"]["method"].lower() == "mean":
         mean_age = float(round(train_df["Age"].mean(), 4))
+        mean_fare = float(round(train_df["Fare"].mean(), 4))
         train_df["Age"].fillna(value=mean_age,
                                inplace=True)
         test_df["Age"].fillna(value=mean_age,
                               inplace=True)
+        test_df["Fare"].fillna(value=mean_fare,
+                              inplace=True)
 
         # update params and save imputation scheme
-        params["imputation"] = {"Age": mean_age}
+        params["imputation"] = {"Age": mean_age,
+                                "Fare": mean_fare}
     elif params["imputation"]["method"].lower() == "mice":
         # TODO MICE interpolation
         raise NotImplementedError
