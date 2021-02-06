@@ -81,7 +81,8 @@ stages:
     - data/processed/split_train_dev.csv
   train_model:
     desc: Train the specified classifier using the pre-allocated stratified K-fold
-      cross validation splits and the current params.yaml settings.
+      cross validation splits and the current params.yaml settings. Track metrics
+      with Git
     cmd: python3 src/models/train_model.py -tr data/processed/train_processed.csv
       -cv data/processed/split_train_dev.csv
     deps:
@@ -96,4 +97,5 @@ stages:
     outs:
     - models/estimator.pkl
     metrics:
-    - results/metrics.json
+    - results/metrics.json:
+        cache: false

@@ -148,9 +148,9 @@ split_train_dev:
     params.yaml:
       random_seed: 12345
       train_test_split:
-        target_class: Survived
         n_split: 10
         shuffle: true
+        target_class: Survived
   outs:
   - path: data/processed/split_train_dev.csv
     md5: d4d2c3159380a986fc2f04a8bcffda08
@@ -188,5 +188,5 @@ train_model:
     md5: f9295ffa633ec68239266512a32dabcc
     size: 773
   - path: results/metrics.json
-    md5: b2b82f87eaadb55bde6b6a5e80d700ab
-    size: 318
+    md5: fedbbe70e656a20821d0efba261b23e2
+    size: 319

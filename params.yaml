@@ -28,16 +28,16 @@ model_params:
   support_vector_machine: null
 normalize: null
 param_tuning:
-  num_eval: 1000
-  scoring: roc_auc
   logistic_regression: null
   naive_bayes: null
   neural_network: null
+  num_eval: 1000
   random_forest:
     criterion: entropy
     max_depth: 20
     min_samples_leaf: 3
     min_samples_split: 9
+  scoring: roc_auc
   support_vector_machine: null
 random_seed: 12345
 train_test_split:
