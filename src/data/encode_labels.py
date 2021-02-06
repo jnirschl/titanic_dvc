@@ -14,29 +14,24 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+from src.data import load_data, load_params, save_as_csv
+
 
 def main(train_path, test_path,
          output_dir, remove_nan=False,
          label_dict_name="label_encoding.yaml"):
     """Encode categorical labels as numeric, save the processed
     dataset the label encoding dictionary"""
-    output_dir = Path(output_dir).resolve()
 
-    assert (os.path.isfile(train_path)), FileNotFoundError
-    assert (os.path.isfile(test_path)), FileNotFoundError
+    output_dir = Path(output_dir).resolve()
     assert (os.path.isdir(output_dir)), NotADirectoryError
 
-    # read files
-    train_df = pd.read_csv(train_path, sep=",", header=0,
-                           na_values=["nan"],
-                           index_col="PassengerId")
-    test_df = pd.read_csv(test_path, sep=",", header=0,
-                          na_values=["nan"],
-                          index_col="PassengerId")
+    # load data
+    train_df, test_df = load_data([train_path, test_path], sep=",", header=0,
+                                  index_col="PassengerId")
 
-    # read column datatypes from params.yaml
-    with open("params.yaml", 'r') as file:
-        params = yaml.safe_load(file)
+    # load params
+    params = load_params()
 
     # update params for column data types
     param_dtypes = params["dtypes"]
@@ -67,15 +62,13 @@ def main(train_path, test_path,
     if remove_nan:
         train_df = train_df.dropna(axis=0, how="any")
 
-    # set output filenames
-    save_train_fname = os.path.basename(train_path.replace(".csv", "_categorized.csv"))
-    save_test_fname = os.path.basename(test_path.replace(".csv", "_categorized.csv"))
-
-    # save updated dataframes
-    train_df.to_csv(output_dir.joinpath(save_train_fname),
-                    na_rep='nan')
-    test_df.to_csv(output_dir.joinpath(save_test_fname),
-                   na_rep='nan')  # test cols starts from 1 because survival status is hidden
+    # save data
+    save_as_csv([train_df, test_df],
+                [train_path, test_path],
+                output_dir,
+                replace_text=".csv",
+                suffix="_categorized.csv",
+                na_rep="nan")
 
     # save and encoding dictionaries
     encoding_dict = yaml.safe_dump(encoding_dict)

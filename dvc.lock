@@ -2,8 +2,8 @@ make_dataset:
   cmd: python3 src/data/make_dataset.py -c titanic -tr train.csv -te test.csv -o ./data/raw
   deps:
   - path: src/data/make_dataset.py
-    md5: a9455ccbe0ab5ce4912ef7d1b8278a18
-    size: 6230
+    md5: 6003407559d33e14c4122af507648dfd
+    size: 2280
   params:
     params.yaml:
       dtypes:
@@ -39,8 +39,8 @@ encode_labels:
     md5: 61fdd54abdbf6a85b778e937122e1194
     size: 61194
   - path: src/data/encode_labels.py
-    md5: 9f66351cbe937cecf76985f96295b8f6
-    size: 4181
+    md5: d86af08312c29e68579950e4898c0e6b
+    size: 3625
   params:
     params.yaml:
       dtypes:
@@ -73,16 +73,120 @@ impute_nan:
     md5: 5d06666c95fed743140b44190fb67c77
     size: 23884
   - path: src/data/replace_nan.py
-    md5: 0ddcc93231044227542be6d537674365
-    size: 2318
+    md5: 6834705a17ff8aec05abebfdb220dc77
+    size: 2600
   params:
     params.yaml:
       imputation:
         Age: 29.6991
   outs:
   - path: data/interim/test_nan_imputed.csv
-    md5: 6a8f3b4b04186bbefb624a533d56fdeb
-    size: 11129
+    md5: aa7540d1d3818bc69f943afdf4b57d39
+    size: 11132
   - path: data/interim/train_nan_imputed.csv
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
+build_features:
+  cmd: python3 src/features/build_features.py -tr data/interim/train_nan_imputed.csv
+    -te data/interim/test_nan_imputed.csv -o data/interim/
+  deps:
+  - path: data/interim/test_nan_imputed.csv
+    md5: aa7540d1d3818bc69f943afdf4b57d39
+    size: 11132
+  - path: data/interim/train_nan_imputed.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
+  - path: src/features/build_features.py
+    md5: 009bcfee2fb5d36547bad6514ba8b27c
+    size: 2139
+  params:
+    params.yaml:
+      feature_eng:
+        featurize: false
+      random_seed: 12345
+  outs:
+  - path: data/interim/test_featurized.csv
+    md5: aa7540d1d3818bc69f943afdf4b57d39
+    size: 11132
+  - path: data/interim/train_featurized.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
+normalize_data:
+  cmd: python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te
+    data/interim/test_featurized.csv -o data/processed/
+  deps:
+  - path: data/interim/test_featurized.csv
+    md5: aa7540d1d3818bc69f943afdf4b57d39
+    size: 11132
+  - path: data/interim/train_featurized.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
+  - path: src/features/normalize.py
+    md5: 1e67fe2375c91a702144569d41a9f9c1
+    size: 1924
+  params:
+    params.yaml:
+      normalize:
+  outs:
+  - path: data/processed/test_processed.csv
+    md5: aa7540d1d3818bc69f943afdf4b57d39
+    size: 11132
+  - path: data/processed/train_processed.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
+split_train_dev:
+  cmd: python3 src/data/split_train_dev.py -tr data/processed/train_processed.csv
+    -o data/processed/
+  deps:
+  - path: data/processed/train_processed.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
+  - path: src/data/split_train_dev.py
+    md5: 18368dc893cc1b306e39f62f6d460861
+    size: 2966
+  params:
+    params.yaml:
+      random_seed: 12345
+      train_test_split:
+        target_class: Survived
+        n_split: 10
+        shuffle: true
+  outs:
+  - path: data/processed/split_train_dev.csv
+    md5: d4d2c3159380a986fc2f04a8bcffda08
+    size: 56115
+train_model:
+  cmd: python3 src/models/train_model.py -tr data/processed/train_processed.csv -cv
+    data/processed/split_train_dev.csv
+  deps:
+  - path: data/processed/split_train_dev.csv
+    md5: d4d2c3159380a986fc2f04a8bcffda08
+    size: 56115
+  - path: data/processed/train_processed.csv
+    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
+    size: 24592
+  - path: src/models/train_model.py
+    md5: 5de6d105914a15b3f937495d51ce7b0e
+    size: 4274
+  params:
+    params.yaml:
+      classifier: random_forest
+      model_params:
+        logistic_regression:
+        naive_bayes:
+        neural_network:
+        random_forest:
+          criterion: entropy
+          max_depth: 20
+          min_samples_leaf: 3
+          min_samples_split: 9
+        support_vector_machine:
+      random_seed: 12345
+      train_test_split.target_class: Survived
+  outs:
+  - path: models/estimator.pkl
+    md5: f9295ffa633ec68239266512a32dabcc
+    size: 773
+  - path: results/metrics.json
+    md5: b2b82f87eaadb55bde6b6a5e80d700ab
+    size: 318

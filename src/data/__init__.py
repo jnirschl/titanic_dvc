@@ -8,42 +8,109 @@
 # ======================================================================
 
 import os
-from pathlib import Path
 
 import pandas as pd
 import yaml
 
 
-def load_data(train_path, test_path,
-              output_dir, load_params=False) -> object:
+def load_params(filepath="params.yaml") -> dict:
+    """Helper function to load params.yaml
+
+    Args:
+        filepath (str): filename or full filepath to yaml file with parameters
+
+    Returns:
+        dict: dictionary of parameters
+    """
+
+    assert (os.path.isfile(filepath)), FileNotFoundError
+
+    # read params.yaml
+    with open(filepath, "r") as file:
+        params = yaml.safe_load(file)
+
+    return params
+
+
+def convert_none_to_null(params):
+    """Convert None values in params.yaml into null to ensure
+    correct reading/writing as None type"""
+    if isinstance(params, list):
+        params[:] = [convert_none_to_null(elem) for elem in params]
+    elif isinstance(params, dict):
+        for k, v in params.items():
+            params[k] = convert_none_to_null(v)
+    return 'null' if params is None else params
+
+
+def save_params(params):
+    """"""
+    # convert None values to null
+    convert_none_to_null(params)
+
+    # save params
+    new_params = yaml.safe_dump(params)
+
+    with open("params2.yaml", 'w') as writer:
+        writer.write(new_params)
+
+
+def load_data(data_path,
+              sep=",",
+              header=None,
+              index_col=None) -> object:
     """Helper function to load train and test files
      as well as optional param loading
 
     Args:
-        train_path (str):
-        test_path (str):
-        output_dir (str):
-        load_params (bool):
+        data_path (str or list of str): path to csv file
+        sep (str):
+        index_col (str):
+        header (int):
 
     Returns:
-        object: """
-    output_dir = Path(output_dir).resolve()
+        object:
+    """
 
-    assert (os.path.isfile(train_path)), FileNotFoundError
-    assert (os.path.isfile(test_path)), FileNotFoundError
-    assert (os.path.isdir(output_dir)), NotADirectoryError
+    # if single path as str, convert to list of str
+    if type(data_path) is str:
+        data_path = [data_path]
 
-    # read files
-    train_df = pd.read_csv(train_path, sep=",", header=0,
-                           index_col="PassengerId")
-    test_df = pd.read_csv(test_path, sep=",", header=0,
-                          index_col="PassengerId")
+    # loop over filepath in list and read file
+    output_df = []
+    for elem in data_path:
+        output_df.append(pd.read_csv(elem, sep=sep, header=header,
+                                     index_col=index_col))
 
-    # params defaults to empty dict
-    params = {}
-    if load_params:
-        # read column datatypes from params.yaml
-        with open("params.yaml", "r") as file:
-            params = yaml.safe_load(file)
+    # if single file as input, return single df not a list
+    if len(output_df) == 1:
+        output_df = output_df[0]
 
-    return train_df, test_df, output_dir, params
+    return output_df
+
+
+def save_as_csv(df, filepath, output_dir,
+                replace_text=".csv",
+                suffix="_processed.csv",
+                na_rep="nan"):
+    """Helper function to format the new filename and save output"""
+
+    # if single path as str, convert to list of str
+
+    if type(df) is not list:
+        df = [df]
+
+    if type(filepath) is str:
+        filepath = [filepath]
+
+    # list lengths must be equal
+    assert (len(df) == len(filepath)), AssertionError
+
+    for temp_df, temp_path in zip(df, filepath):
+        # set output filenames
+        save_fname = os.path.basename(temp_path.replace(replace_text,
+                                                        suffix))
+
+        # save updated dataframes
+        temp_df.to_csv(output_dir.joinpath(save_fname),
+                       na_rep=na_rep)
