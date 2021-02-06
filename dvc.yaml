@@ -99,3 +99,16 @@ stages:
     metrics:
     - results/metrics.json:
         cache: false
+  predict_output:
+    desc: Predict output on held-out test set for submission to Kaggle.
+    cmd: python3 src/models/predict.py -te data/processed/test_processed.csv -rd results/
+      -md models/
+    deps:
+    - data/processed/test_processed.csv
+    - src/models/metrics.py
+    - src/models/predict.py
+    params:
+    - train_test_split.target_class
+    outs:
+    - results/test_predict_binary.csv
+    - results/test_predict_proba.csv

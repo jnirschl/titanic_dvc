@@ -192,3 +192,26 @@ train_model:
   - path: results/metrics.json
     md5: 8ea39b1a335c41443a020f532c4d71e6
     size: 318
+predict_output:
+  cmd: python3 src/models/predict.py -te data/processed/test_processed.csv -rd results/
+    -md models/
+  deps:
+  - path: data/processed/test_processed.csv
+    md5: cbc38434c407b0761da80a422ba97cff
+    size: 11136
+  - path: src/models/metrics.py
+    md5: 69f52aa7384511f15c07d1504b368643
+    size: 2056
+  - path: src/models/predict.py
+    md5: dc62c9aed507894731426aac07264358
+    size: 3178
+  params:
+    params.yaml:
+      train_test_split.target_class: Survived
+  outs:
+  - path: results/test_predict_binary.csv
+    md5: 2b540c942b2c8365f54d4cb6d77fee8b
+    size: 2839
+  - path: results/test_predict_proba.csv
+    md5: 6d376e5da04b2688d70d753973954858
+    size: 10084
