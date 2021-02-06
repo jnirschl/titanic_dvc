@@ -80,6 +80,7 @@ impute_nan:
       imputation:
         Age: 29.6991
         Fare: 32.2042
+        method: mean
   outs:
   - path: data/interim/test_nan_imputed.csv
     md5: cbc38434c407b0761da80a422ba97cff
