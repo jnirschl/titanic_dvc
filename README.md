@@ -172,6 +172,20 @@ dvc run -n train_model -p classifier,model_params,random_seed,train_test_split.t
     python3 src/models/train_model.py -tr data/processed/train_processed.csv -cv data/processed/split_train_dev.csv
 ```
 
+#### Predict output
+
+``` bash
+dvc run -n predict_output -p train_test_split.target_class \
+    -d src/models/predict.py \
+    -d src/models/metrics.py \
+    -d models/estimator.pkl \
+    -d data/processed/test_processed.csv \
+    -o results/test_predict_proba.csv \
+    -o results/test_predict_binary.csv \
+    --desc "Predict output on held-out test set for submission to Kaggle." \
+    python3 src/models/predict.py -te data/processed/test_processed.csv -rd results/ -md models/
+```
+
 ### 4. Deployment
 
 #### Status dashboard

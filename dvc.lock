@@ -199,6 +199,9 @@ predict_output:
   - path: data/processed/test_processed.csv
     md5: cbc38434c407b0761da80a422ba97cff
     size: 11136
+  - path: models/estimator.pkl
+    md5: 83e0e355b40b1e2bef449e71c478ad0b
+    size: 9603720
   - path: src/models/metrics.py
     md5: 69f52aa7384511f15c07d1504b368643
     size: 2056

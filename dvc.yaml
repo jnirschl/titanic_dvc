@@ -105,6 +105,7 @@ stages:
       -md models/
     deps:
     - data/processed/test_processed.csv
+    - models/estimator.pkl
     - src/models/metrics.py
     - src/models/predict.py
     params:
