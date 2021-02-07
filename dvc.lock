@@ -98,8 +98,8 @@ build_features:
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
   - path: src/features/build_features.py
-    md5: 9ac6bacf51316b86ee0a378cc3d374a1
-    size: 4384
+    md5: 488c9dcd2eee8c8f03ae64153bf155ee
+    size: 4383
   params:
     params.yaml:
       feature_eng:
@@ -178,20 +178,20 @@ train_model:
         neural_network:
         random_forest:
           criterion: entropy
-          max_depth:
-          min_samples_leaf: 7
-          min_samples_split: 2
+          max_depth: 12
+          min_samples_leaf: 8
+          min_samples_split: 9
         support_vector_machine:
         xgboost:
       random_seed: 12345
       train_test_split.target_class: Survived
   outs:
   - path: models/estimator.pkl
-    md5: a9a4c59cf31b64353a324539d6cbcea0
-    size: 6213238
+    md5: 5b43862fe043874e485be606240962cd
+    size: 5576760
   - path: results/metrics.json
-    md5: 05aac830e3ec21db20ea5683c9281f92
-    size: 318
+    md5: 431cf145f2622a006d6533173b45d345
+    size: 320
 predict_output:
   cmd: python3 src/models/predict.py -te data/processed/test_processed.csv -rd results/
     -md models/
@@ -200,8 +200,8 @@ predict_output:
     md5: 50b3bac148656fdb133e84efcc5d69b7
     size: 62995
   - path: models/estimator.pkl
-    md5: a9a4c59cf31b64353a324539d6cbcea0
-    size: 6213238
+    md5: 5b43862fe043874e485be606240962cd
+    size: 5576760
   - path: src/models/metrics.py
     md5: 69f52aa7384511f15c07d1504b368643
     size: 2056
@@ -215,8 +215,8 @@ predict_output:
       train_test_split.target_class: Survived
   outs:
   - path: results/test_predict_binary.csv
-    md5: fd2c65d7625a02d7a949894e64f1f3cf
+    md5: b653e55426225891a1d2833599ac39ec
     size: 2839
   - path: results/test_predict_proba.csv
-    md5: 0ee6951adf8a9f856a48a33baf493d8c
+    md5: 12009a8673d5f63ec1ba862a6a163866
     size: 10092

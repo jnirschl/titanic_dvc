@@ -46,12 +46,11 @@ def convert_none_to_null(params):
 def save_params(params):
     """"""
     # convert None values to null
-    convert_none_to_null(params)
 
     # save params
     new_params = yaml.safe_dump(params)
 
-    with open("params2.yaml", 'w') as writer:
+    with open("params.yaml", 'w') as writer:
         writer.write(new_params)
 
 
