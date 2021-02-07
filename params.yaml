@@ -44,7 +44,7 @@ param_tuning:
     min_samples_leaf: 6
     min_samples_split: 9
     n_estimators: 460
-  scoring: roc_auc
+  scoring: accuracy
   support_vector_machine: null
 predict:
   js_estimator: true
