@@ -41,7 +41,7 @@ def main(train_path, test_path,
     df = pd.concat([train_df, test_df], sort=False)
     df = df.astype(param_dtypes)
 
-    # drop unnecessary filenames
+    # drop unnecessary columns
     df = df.drop(columns=params["drop_cols"])
 
     # convert to categorical

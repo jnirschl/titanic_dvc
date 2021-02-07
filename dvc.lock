@@ -39,8 +39,8 @@ encode_labels:
     md5: 61fdd54abdbf6a85b778e937122e1194
     size: 61194
   - path: src/data/encode_labels.py
-    md5: d86af08312c29e68579950e4898c0e6b
-    size: 3625
+    md5: 94202f6ff677094ae0bf8b98575baf50
+    size: 3623
   params:
     params.yaml:
       dtypes:
@@ -98,30 +98,30 @@ build_features:
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
   - path: src/features/build_features.py
-    md5: 009bcfee2fb5d36547bad6514ba8b27c
-    size: 2139
+    md5: 9ac6bacf51316b86ee0a378cc3d374a1
+    size: 4384
   params:
     params.yaml:
       feature_eng:
-        featurize: false
+        featurize: true
       random_seed: 12345
   outs:
   - path: data/interim/test_featurized.csv
-    md5: cbc38434c407b0761da80a422ba97cff
-    size: 11136
+    md5: 6786b97bc7cb81d8e606164c1a0aff8f
+    size: 63465
   - path: data/interim/train_featurized.csv
-    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
-    size: 24592
+    md5: 66d32b8498ff4a1b725c2567d76be9bc
+    size: 135570
 normalize_data:
   cmd: python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te
     data/interim/test_featurized.csv -o data/processed/
   deps:
   - path: data/interim/test_featurized.csv
-    md5: cbc38434c407b0761da80a422ba97cff
-    size: 11136
+    md5: 6786b97bc7cb81d8e606164c1a0aff8f
+    size: 63465
   - path: data/interim/train_featurized.csv
-    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
-    size: 24592
+    md5: 66d32b8498ff4a1b725c2567d76be9bc
+    size: 135570
   - path: src/features/normalize.py
     md5: 1e67fe2375c91a702144569d41a9f9c1
     size: 1924
@@ -130,18 +130,18 @@ normalize_data:
       normalize:
   outs:
   - path: data/processed/test_processed.csv
-    md5: cbc38434c407b0761da80a422ba97cff
-    size: 11136
+    md5: 50b3bac148656fdb133e84efcc5d69b7
+    size: 62995
   - path: data/processed/train_processed.csv
-    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
-    size: 24592
+    md5: c1036b801f92d1b77135eab799e92657
+    size: 134727
 split_train_dev:
   cmd: python3 src/data/split_train_dev.py -tr data/processed/train_processed.csv
     -o data/processed/
   deps:
   - path: data/processed/train_processed.csv
-    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
-    size: 24592
+    md5: c1036b801f92d1b77135eab799e92657
+    size: 134727
   - path: src/data/split_train_dev.py
     md5: 18368dc893cc1b306e39f62f6d460861
     size: 2966
@@ -164,8 +164,8 @@ train_model:
     md5: d4d2c3159380a986fc2f04a8bcffda08
     size: 56115
   - path: data/processed/train_processed.csv
-    md5: 9edd0421f46d2f0786ea6d82fdcf4e12
-    size: 24592
+    md5: c1036b801f92d1b77135eab799e92657
+    size: 134727
   - path: src/models/train_model.py
     md5: 393a733bef3fbe5b26772193d9450585
     size: 4424
@@ -187,21 +187,21 @@ train_model:
       train_test_split.target_class: Survived
   outs:
   - path: models/estimator.pkl
-    md5: 11c09b1ca534fb84367f3432a97234b7
-    size: 5734294
+    md5: a9a4c59cf31b64353a324539d6cbcea0
+    size: 6213238
   - path: results/metrics.json
-    md5: de2b890b768388350d473ff32956ae47
-    size: 320
+    md5: 05aac830e3ec21db20ea5683c9281f92
+    size: 318
 predict_output:
   cmd: python3 src/models/predict.py -te data/processed/test_processed.csv -rd results/
     -md models/
   deps:
   - path: data/processed/test_processed.csv
-    md5: cbc38434c407b0761da80a422ba97cff
-    size: 11136
+    md5: 50b3bac148656fdb133e84efcc5d69b7
+    size: 62995
   - path: models/estimator.pkl
-    md5: 11c09b1ca534fb84367f3432a97234b7
-    size: 5734294
+    md5: a9a4c59cf31b64353a324539d6cbcea0
+    size: 6213238
   - path: src/models/metrics.py
     md5: 69f52aa7384511f15c07d1504b368643
     size: 2056
@@ -215,8 +215,8 @@ predict_output:
       train_test_split.target_class: Survived
   outs:
   - path: results/test_predict_binary.csv
-    md5: 546a930b44c1b075e85b1e8f18ec71e7
+    md5: fd2c65d7625a02d7a949894e64f1f3cf
     size: 2839
   - path: results/test_predict_proba.csv
-    md5: 8c46b07750f67622a916f400c44e496f
-    size: 10085
+    md5: 0ee6951adf8a9f856a48a33baf493d8c
+    size: 10092

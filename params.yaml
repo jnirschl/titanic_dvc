@@ -13,7 +13,7 @@ dtypes:
   SibSp: int
   Survived: category
 feature_eng:
-  featurize: false
+  featurize: true
 imputation:
   Age: 29.6991
   Fare: 32.2042
