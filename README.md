@@ -175,7 +175,7 @@ dvc run -n train_model -p classifier,model_params,random_seed,train_test_split.t
 #### Predict output
 
 ``` bash
-dvc run -n predict_output -p train_test_split.target_class \
+dvc run -n predict_output -p predict,train_test_split.target_class \
     -d src/models/predict.py \
     -d src/models/metrics.py \
     -d models/estimator.pkl \

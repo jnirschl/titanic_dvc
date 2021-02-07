@@ -109,6 +109,7 @@ stages:
     - src/models/metrics.py
     - src/models/predict.py
     params:
+    - predict
     - train_test_split.target_class
     outs:
     - results/test_predict_binary.csv

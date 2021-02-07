@@ -206,15 +206,17 @@ predict_output:
     md5: 69f52aa7384511f15c07d1504b368643
     size: 2056
   - path: src/models/predict.py
-    md5: dc62c9aed507894731426aac07264358
-    size: 3178
+    md5: f17d43ddde08069dc76999ecfd68b1bf
+    size: 3267
   params:
     params.yaml:
+      predict:
+        js_estimator: false
       train_test_split.target_class: Survived
   outs:
   - path: results/test_predict_binary.csv
-    md5: 2b540c942b2c8365f54d4cb6d77fee8b
+    md5: f8840d548a75f65362543456029280dc
     size: 2839
   - path: results/test_predict_proba.csv
-    md5: 6d376e5da04b2688d70d753973954858
-    size: 10084
+    md5: 5578292607804eb1f23d3f1884910bfa
+    size: 10103

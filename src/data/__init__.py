@@ -89,7 +89,8 @@ def load_data(data_path,
 def save_as_csv(df, filepath, output_dir,
                 replace_text=".csv",
                 suffix="_processed.csv",
-                na_rep="nan"):
+                na_rep="nan",
+                output_path=False):
     """Helper function to format the new filename and save output"""
 
     # if single path as str, convert to list of str
@@ -109,5 +110,8 @@ def save_as_csv(df, filepath, output_dir,
                                                         suffix))
 
         # save updated dataframes
-        temp_df.to_csv(output_dir.joinpath(save_fname),
+        save_filepath = output_dir.joinpath(save_fname)
+        temp_df.to_csv(save_filepath,
                        na_rep=na_rep)
+        if output_path:
+            return save_filepath
