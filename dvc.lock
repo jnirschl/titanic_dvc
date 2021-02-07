@@ -206,8 +206,8 @@ predict_output:
     md5: 69f52aa7384511f15c07d1504b368643
     size: 2056
   - path: src/models/predict.py
-    md5: f17d43ddde08069dc76999ecfd68b1bf
-    size: 3267
+    md5: 3ba9b367a92a19518c0d7fa28426f7a1
+    size: 3268
   params:
     params.yaml:
       predict:
