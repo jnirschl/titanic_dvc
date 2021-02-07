@@ -47,4 +47,4 @@ train_test_split:
   shuffle: true
   target_class: Survived
 predict:
-  js_estimator: false
+  js_estimator: true

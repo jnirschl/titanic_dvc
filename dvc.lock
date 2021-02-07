@@ -211,12 +211,12 @@ predict_output:
   params:
     params.yaml:
       predict:
-        js_estimator: false
+        js_estimator: true
       train_test_split.target_class: Survived
   outs:
   - path: results/test_predict_binary.csv
-    md5: f8840d548a75f65362543456029280dc
+    md5: 2b540c942b2c8365f54d4cb6d77fee8b
     size: 2839
   - path: results/test_predict_proba.csv
-    md5: 5578292607804eb1f23d3f1884910bfa
-    size: 10103
+    md5: 6d376e5da04b2688d70d753973954858
+    size: 10084
