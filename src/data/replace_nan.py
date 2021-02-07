@@ -43,8 +43,8 @@ def main(train_path, test_path,
                               inplace=True)
 
         # update params and save imputation scheme
-        params["imputation"] = {"Age": mean_age,
-                                "Fare": mean_fare}
+        params["imputation"]["Age"] = mean_age
+        params["imputation"]["Fare"] = mean_fare
     elif params["imputation"]["method"].lower() == "mice":
         # TODO MICE interpolation
         raise NotImplementedError

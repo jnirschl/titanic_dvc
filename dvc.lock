@@ -73,13 +73,14 @@ impute_nan:
     md5: 5d06666c95fed743140b44190fb67c77
     size: 23884
   - path: src/data/replace_nan.py
-    md5: 8ce621f788a633ea0e97dec734b121ad
-    size: 2804
+    md5: 76582379c528d402d408982409bd9820
+    size: 2800
   params:
     params.yaml:
       imputation:
         Age: 29.6991
         Fare: 32.2042
+        method: mean
   outs:
   - path: data/interim/test_nan_imputed.csv
     md5: cbc38434c407b0761da80a422ba97cff
@@ -190,8 +191,8 @@ train_model:
     md5: 5b43862fe043874e485be606240962cd
     size: 5576760
   - path: results/metrics.json
-    md5: d1c30e27b3cbc0c93c1c00aaebc0ef0e
-    size: 318
+    md5: 271397d9a8f3d3081cf37cb5a013e864
+    size: 321
 predict_output:
   cmd: python3 src/models/predict.py -te data/processed/test_processed.csv -rd results/
     -md models/

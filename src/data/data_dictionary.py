@@ -17,6 +17,8 @@ import pandas as pd
 import yaml
 from tableone import TableOne
 
+from src.data import load_data, load_params
+
 
 def create(data_path, report_dir="./reports/figures",
            output_file="data_dictionary.tex"):
@@ -29,9 +31,8 @@ def create(data_path, report_dir="./reports/figures",
     df = pd.read_csv(data_path, sep=",", header=0,
                      na_values=["nan"])
 
-    # read column datatypes from params.yaml
-    with open("params.yaml", 'r') as file:
-        params = yaml.safe_load(file)
+    # load params
+    params = load_params()
 
     # update params for column data types
     param_dtypes = params["dtypes"]
