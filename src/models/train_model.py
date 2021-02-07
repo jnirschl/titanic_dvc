@@ -18,6 +18,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import cross_validate
+from xgboost import XGBClassifier
 
 from src.data import load_data, load_params
 from src.models.metrics import gmpr_score
@@ -51,6 +52,8 @@ def main(train_path, cv_idx_path,
     if classifier.lower() == "random_forest":
         model = RandomForestClassifier(**model_params,
                                        random_state=params["random_seed"])
+    elif classifier.lower() == "xgboost":
+        model = XGBClassifier(random_state=params["random_seed"])
     else:
         raise NotImplementedError
 
