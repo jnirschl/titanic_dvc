@@ -17,16 +17,15 @@ feature_eng:
 imputation:
   Age: 29.6991
   Fare: 32.2042
-  method: mean
 model_params:
   logistic_regression: null
   naive_bayes: null
   neural_network: null
   random_forest:
     criterion: entropy
-    max_depth: 20
-    min_samples_leaf: 3
-    min_samples_split: 9
+    max_depth: null
+    min_samples_leaf: 7
+    min_samples_split: 2
   support_vector_machine: null
   xgboost: null
 normalize: null
@@ -37,9 +36,9 @@ param_tuning:
   num_eval: 1000
   random_forest:
     criterion: entropy
-    max_depth: 20
-    min_samples_leaf: 3
-    min_samples_split: 9
+    max_depth: null
+    min_samples_leaf: 7
+    min_samples_split: 2
   scoring: roc_auc
   support_vector_machine: null
 predict:

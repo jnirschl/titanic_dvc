@@ -76,7 +76,7 @@ def rf_model(x_train, y_train,
         estimator = RandomForestClassifier(**params,
                                            random_state=random_state)
         score = cross_val_score(estimator, x_train, y=y_train,
-                                scoring='roc_auc',
+                                scoring='accuracy',
                                 cv=skf.split(x_train, y_train)).mean()
 
         return {"loss": -score, "status": hyperopt.STATUS_OK}
