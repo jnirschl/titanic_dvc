@@ -80,7 +80,7 @@ def main(train_path, test_path,
 
 
 def is_vip(df):
-    return pd.DataFrame([df["Pclass"] > 0,
+    return pd.DataFrame([df["Pclass"] == 1,
                          df["Fare"] > np.percentile(df["Fare"], 95)]).transpose().all(axis=1).astype(int)
 
 
