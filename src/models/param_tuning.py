@@ -64,6 +64,7 @@ def rf_model(x_train, y_train,
     params = load_params()
     params_split = params['train_test_split']
     params_split["random_seed"] = params["random_seed"]
+    num_eval = params["param_tuning"]["num_eval"]
 
     # K-fold split into train and dev sets stratified by train_labels
     # using random seed for reproducibility
@@ -73,6 +74,9 @@ def rf_model(x_train, y_train,
 
     # objective function
     def obj_fnc(params):
+        params["n_estimators"] = int(params["n_estimators"])
+        params["min_samples_leaf"] = int(params["min_samples_leaf"])
+        params["min_samples_split"] = int(params["min_samples_split"])
         estimator = RandomForestClassifier(**params,
                                            random_state=random_state)
         score = cross_val_score(estimator, x_train, y=y_train,
@@ -83,12 +87,14 @@ def rf_model(x_train, y_train,
 
     # search space
     criterion_list = ["gini", "entropy"]
-    max_depth_list = [None, 4, 8, 12, 20]
-    min_samples_leaf = range(1, 10)
-    min_samples_split = range(2, 10)
-    space = {"max_depth": hyperopt.hp.choice("max_depth", max_depth_list),
-             "min_samples_leaf": hyperopt.hp.choice("min_samples_leaf", min_samples_leaf),
-             "min_samples_split": hyperopt.hp.choice("min_samples_split", min_samples_split),
+    max_depth_list = [None, 4, 6, 8, 10, 12, 15, 20]
+    max_features_list = ["auto", "sqrt", "log2"]
+
+    space = {"n_estimators": hyperopt.hp.quniform("n_estimators", 10, 500, 10),
+             "max_features": hyperopt.hp.choice("max_features", max_features_list,),
+             "max_depth": hyperopt.hp.choice("max_depth", max_depth_list),
+             "min_samples_leaf": hyperopt.hp.quniform("min_samples_leaf", 1, 10, 1),
+             "min_samples_split": hyperopt.hp.quniform("min_samples_split", 2, 10, 1),
              "criterion": hyperopt.hp.choice("criterion", criterion_list)
              }
 
@@ -106,9 +112,11 @@ def rf_model(x_train, y_train,
 
     # update criterion with text option
     best_param["criterion"] = criterion_list[best_param["criterion"]]
+    best_param["max_features"] = max_features_list[best_param["max_features"]]
     best_param["max_depth"] = max_depth_list[best_param["max_depth"]]
-    best_param["min_samples_leaf"] = min_samples_leaf[best_param["min_samples_leaf"]]
-    best_param["min_samples_split"] = min_samples_split[best_param["min_samples_split"]]
+    best_param["n_estimators"] = int(best_param["n_estimators"])
+    best_param["min_samples_leaf"] = int(best_param["min_samples_leaf"])
+    best_param["min_samples_split"] = int(best_param["min_samples_split"])
 
     return best_param
 

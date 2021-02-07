@@ -99,8 +99,8 @@ build_features:
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
   - path: src/features/build_features.py
-    md5: 355d8aeebd12fcfbedaa30bb32d155f3
-    size: 4384
+    md5: 2e6e7d169d77cb1e990fbb37c4f147bd
+    size: 5030
   params:
     params.yaml:
       feature_eng:
@@ -108,21 +108,21 @@ build_features:
       random_seed: 12345
   outs:
   - path: data/interim/test_featurized.csv
-    md5: 6786b97bc7cb81d8e606164c1a0aff8f
-    size: 63465
+    md5: 6879b369c8d9f93c8ddeff61baea9ada
+    size: 59474
   - path: data/interim/train_featurized.csv
-    md5: 66d32b8498ff4a1b725c2567d76be9bc
-    size: 135570
+    md5: 980d370c7991c5b991bf8c47d13beb02
+    size: 127169
 normalize_data:
   cmd: python3 src/features/normalize.py -tr data/interim/train_featurized.csv -te
     data/interim/test_featurized.csv -o data/processed/
   deps:
   - path: data/interim/test_featurized.csv
-    md5: 6786b97bc7cb81d8e606164c1a0aff8f
-    size: 63465
+    md5: 6879b369c8d9f93c8ddeff61baea9ada
+    size: 59474
   - path: data/interim/train_featurized.csv
-    md5: 66d32b8498ff4a1b725c2567d76be9bc
-    size: 135570
+    md5: 980d370c7991c5b991bf8c47d13beb02
+    size: 127169
   - path: src/features/normalize.py
     md5: 1e67fe2375c91a702144569d41a9f9c1
     size: 1924
@@ -131,18 +131,18 @@ normalize_data:
       normalize:
   outs:
   - path: data/processed/test_processed.csv
-    md5: 50b3bac148656fdb133e84efcc5d69b7
-    size: 62995
+    md5: 0cb34fc53024fa12b32a098a32870612
+    size: 59004
   - path: data/processed/train_processed.csv
-    md5: c1036b801f92d1b77135eab799e92657
-    size: 134727
+    md5: 55fc818f9babfe04c7bd9a605e0f6240
+    size: 126326
 split_train_dev:
   cmd: python3 src/data/split_train_dev.py -tr data/processed/train_processed.csv
     -o data/processed/
   deps:
   - path: data/processed/train_processed.csv
-    md5: c1036b801f92d1b77135eab799e92657
-    size: 134727
+    md5: 55fc818f9babfe04c7bd9a605e0f6240
+    size: 126326
   - path: src/data/split_train_dev.py
     md5: 18368dc893cc1b306e39f62f6d460861
     size: 2966
@@ -165,8 +165,8 @@ train_model:
     md5: d4d2c3159380a986fc2f04a8bcffda08
     size: 56115
   - path: data/processed/train_processed.csv
-    md5: c1036b801f92d1b77135eab799e92657
-    size: 134727
+    md5: 55fc818f9babfe04c7bd9a605e0f6240
+    size: 126326
   - path: src/models/train_model.py
     md5: 393a733bef3fbe5b26772193d9450585
     size: 4424
@@ -178,31 +178,33 @@ train_model:
         naive_bayes:
         neural_network:
         random_forest:
-          criterion: entropy
-          max_depth: 12
-          min_samples_leaf: 8
+          criterion: gini
+          max_depth: 15
+          max_features: auto
+          min_samples_leaf: 6
           min_samples_split: 9
+          n_estimators: 460
         support_vector_machine:
         xgboost:
       random_seed: 12345
       train_test_split.target_class: Survived
   outs:
   - path: models/estimator.pkl
-    md5: 5b43862fe043874e485be606240962cd
-    size: 5576760
+    md5: 165932012501a509f0ed2448aebfe919
+    size: 31660351
   - path: results/metrics.json
-    md5: 271397d9a8f3d3081cf37cb5a013e864
-    size: 321
+    md5: 8cbce1b099a92b414dea92060eacba02
+    size: 318
 predict_output:
   cmd: python3 src/models/predict.py -te data/processed/test_processed.csv -rd results/
     -md models/
   deps:
   - path: data/processed/test_processed.csv
-    md5: 50b3bac148656fdb133e84efcc5d69b7
-    size: 62995
+    md5: 0cb34fc53024fa12b32a098a32870612
+    size: 59004
   - path: models/estimator.pkl
-    md5: 5b43862fe043874e485be606240962cd
-    size: 5576760
+    md5: 165932012501a509f0ed2448aebfe919
+    size: 31660351
   - path: src/models/metrics.py
     md5: 69f52aa7384511f15c07d1504b368643
     size: 2056
@@ -216,8 +218,8 @@ predict_output:
       train_test_split.target_class: Survived
   outs:
   - path: results/test_predict_binary.csv
-    md5: b653e55426225891a1d2833599ac39ec
+    md5: 76577b506c3bc22a50d1aa61f3b940d0
     size: 2839
   - path: results/test_predict_proba.csv
-    md5: 12009a8673d5f63ec1ba862a6a163866
-    size: 10092
+    md5: 84ac915213a1b4f510486a0d049f39df
+    size: 10087

@@ -47,22 +47,19 @@ def main(train_path, test_path,
 
     # optionally normalize data
     if params_featurize["featurize"]:
-        # create polynomial feature instance
-        poly = PolynomialFeatures(degree=2,
+        # create poly features
+        df = create_poly_features(df, degree=2,
                                   interaction_only=True)
-        poly.fit_transform(df.to_numpy())
-        poly_cols = poly.get_feature_names(df.columns)
-        poly_df = pd.DataFrame(poly.fit_transform(df.to_numpy()),
-                               columns=poly_cols).set_index(df.index)
-        df = poly_df.drop(columns=poly_cols[0])
 
         # hand-crafted features
-        df["family_size"] = df["SibSp"] + df["Parch"]
-        df["is_vip"] = is_vip(df)
-        df["parent"] = is_parent(df)
-        df["is_orphan"] = is_orphan(df)
-        df["is_single_adult_mother"] = is_single_adult_mother(df)
-        df["is_single_adult_male"] = is_single_adult_male(df)
+        df = hand_crafted_features(df)
+
+        # bin continuous features
+        df['Age'] = pd.qcut(df['Age'], 10,
+                            duplicates="drop").astype('category').cat.codes
+        df['Fare'] = pd.qcut(df['Fare'], 13).astype('category').cat.codes
+        df['family_size'] = pd.qcut(df['family_size'], 3,
+                                    duplicates="drop").astype('category').cat.codes
 
     # return datasets to train and test
     train_df = df.loc[train_df.index, df.columns]
@@ -78,6 +75,15 @@ def main(train_path, test_path,
                 suffix="_featurized.csv",
                 na_rep="nan")
 
+
+def hand_crafted_features(df):
+    df["family_size"] = df["SibSp"] + df["Parch"] +1
+    df["is_vip"] = is_vip(df)
+    df["parent"] = is_parent(df)
+    df["is_orphan"] = is_orphan(df)
+    df["is_single_adult_mother"] = is_single_adult_mother(df)
+    df["is_single_adult_male"] = is_single_adult_male(df)
+    return df
 
 def is_vip(df):
     return pd.DataFrame([df["Pclass"] == 1,
@@ -107,6 +113,17 @@ def is_single_adult_male(df):
                          df["SibSp"] == 0,
                          df["Sex"] == 1,
                          df["Age"] >= 18]).transpose().all(axis=1).astype(int)
+
+def create_poly_features(df, degree=2,
+                         interaction_only=True):
+    # create polynomial feature instance
+    poly = PolynomialFeatures(degree=degree,
+                              interaction_only=interaction_only)
+    poly.fit_transform(df.to_numpy())
+    poly_cols = poly.get_feature_names(df.columns)
+    poly_df = pd.DataFrame(poly.fit_transform(df.to_numpy()),
+                           columns=poly_cols).set_index(df.index)
+    return poly_df.drop(columns=poly_cols[0])
 
 
 if __name__ == '__main__':

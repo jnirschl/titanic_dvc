@@ -23,10 +23,12 @@ model_params:
   naive_bayes: null
   neural_network: null
   random_forest:
-    criterion: entropy
-    max_depth: 12
-    min_samples_leaf: 8
+    criterion: gini
+    max_depth: 15
+    max_features: auto
+    min_samples_leaf: 6
     min_samples_split: 9
+    n_estimators: 460
   support_vector_machine: null
   xgboost: null
 normalize: null
@@ -34,12 +36,14 @@ param_tuning:
   logistic_regression: null
   naive_bayes: null
   neural_network: null
-  num_eval: 1000
+  num_eval: 100
   random_forest:
-    criterion: entropy
-    max_depth: 12
-    min_samples_leaf: 8
+    criterion: gini
+    max_depth: 15
+    max_features: auto
+    min_samples_leaf: 6
     min_samples_split: 9
+    n_estimators: 460
   scoring: roc_auc
   support_vector_machine: null
 predict:
