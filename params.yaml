@@ -1,4 +1,4 @@
-classifier: random_forest
+classifier: xgboost
 drop_cols:
 - Name
 - Cabin
@@ -22,6 +22,7 @@ model_params:
   logistic_regression: null
   naive_bayes: null
   neural_network: null
+  xgboost: null
   random_forest:
     criterion: entropy
     max_depth: 20

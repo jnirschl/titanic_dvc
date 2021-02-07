@@ -168,15 +168,16 @@ train_model:
     md5: 9edd0421f46d2f0786ea6d82fdcf4e12
     size: 24592
   - path: src/models/train_model.py
-    md5: 5aa9cf142afe306f597ff7d406b7c539
-    size: 4282
+    md5: 393a733bef3fbe5b26772193d9450585
+    size: 4424
   params:
     params.yaml:
-      classifier: random_forest
+      classifier: xgboost
       model_params:
         logistic_regression:
         naive_bayes:
         neural_network:
+        xgboost:
         random_forest:
           criterion: entropy
           max_depth: 20
@@ -187,11 +188,11 @@ train_model:
       train_test_split.target_class: Survived
   outs:
   - path: models/estimator.pkl
-    md5: 83e0e355b40b1e2bef449e71c478ad0b
-    size: 9603720
+    md5: d6075463c6840104b6c8bea6b84b77d4
+    size: 2572394
   - path: results/metrics.json
-    md5: 8ea39b1a335c41443a020f532c4d71e6
-    size: 318
+    md5: f4b1806ab7af3e216e0a2aabd1ece8b6
+    size: 320
 predict_output:
   cmd: python3 src/models/predict.py -te data/processed/test_processed.csv -rd results/
     -md models/
@@ -200,8 +201,8 @@ predict_output:
     md5: cbc38434c407b0761da80a422ba97cff
     size: 11136
   - path: models/estimator.pkl
-    md5: 83e0e355b40b1e2bef449e71c478ad0b
-    size: 9603720
+    md5: d6075463c6840104b6c8bea6b84b77d4
+    size: 2572394
   - path: src/models/metrics.py
     md5: 69f52aa7384511f15c07d1504b368643
     size: 2056
@@ -213,8 +214,8 @@ predict_output:
       train_test_split.target_class: Survived
   outs:
   - path: results/test_predict_binary.csv
-    md5: 2b540c942b2c8365f54d4cb6d77fee8b
+    md5: 4c28eca1e6f7d62d2be1e81e659d7989
     size: 2839
   - path: results/test_predict_proba.csv
-    md5: 6d376e5da04b2688d70d753973954858
-    size: 10084
+    md5: 8c59701f358f0f12c244e06e350d5b5a
+    size: 10127
