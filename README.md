@@ -1,13 +1,13 @@
 # Titanic DVC
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](./LICENSE)
+![GitHub](https://img.shields.io/github/license/jnirschl/titanic_dvc)
 ------------
 
 ## Project Goals
 
 Predict survival on the Kaggle Titanic dataset using DVC for reproducible machine learning
 
-## Introduction
+## Getting started
 
 This repository uses [Data Version Control (DVC)](https://dvc.org/) to create a machine learning pipeline and track
 experiments. We will use a modified version of
@@ -15,8 +15,33 @@ the [Team Data Science Process](https://docs.microsoft.com/en-us/azure/machine-l
 as our Data Science Life cycle template. This repository template is based on
 the [cookiecutter data science project template](https://drivendata.github.io/cookiecutter-data-science).
 
-In order to start, clone this repository and install [DataVersionControl](https://dvc.org/). Follow the instructions
-below to proceed through the data science life cycle using DVC to manage parameters, scripts, artifacts, and metrics.
+In order to start, clone this repository and install [DataVersionControl](https://dvc.org/). Next, pip install
+requirements according to the script below. Finally, then pull the latest version of data and trained models, which are
+hosted on [DagsHub](https://dagshub.com/jnirschl/titanic_dvc).
+
+```bash
+# clone the repository
+git clone https://github.com/jnirschl/titanic_dvc.git
+
+# create virtual envinroment in folder
+cd titanic_dvc
+python3 -m venv venv
+source venv/bin/activate
+
+# install requirements
+pip install -r requirements.txt
+
+# pull data from origin (https://dagshub.com/jnirschl/titanic_dvc)
+dvc pull -r origin
+
+# check the status of the pipleline
+dvc status
+
+# Expected output
+#   Data and pipelines are up to date.
+```
+
+## Data science life cycle
 
 ### 1. Domain understanding/problem definition
 
