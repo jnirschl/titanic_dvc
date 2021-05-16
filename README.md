@@ -29,7 +29,8 @@ python3 -m venv venv
 source venv/bin/activate
 
 # install requirements
-pip install -r requirements.txt
+pip3 install -r requirements.txt
+pip3 install .
 
 # pull data from origin (https://dagshub.com/jnirschl/titanic_dvc)
 dvc pull -r origin
